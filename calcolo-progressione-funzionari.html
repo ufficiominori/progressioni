@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Calcolo punteggio – Progressione Area Funzionari/EQ</title>
+
+  <!-- Adattamento ai dispositivi mobili -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10px;
+    }
+    fieldset {
+      margin-bottom: 15px;
+      border-radius: 6px;
+    }
+    legend {
+      font-weight: bold;
+    }
+    label {
+      display: block;
+      margin-top: 5px;
+    }
+    input[type="number"], select {
+  	width: 100%;
+  	max-width: 260px;
+  	box-sizing: border-box;
+  	font-size: 1.4rem;     /* testo molto più grande */
+  	padding: 8px 10px;     /* aumenta l’area cliccabile */
+    }
+
+    button {
+      padding: 10px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .result {
+  	font-size: 1.4em;
+  	margin-top: 15px;
+    }
+
+    .block-score {
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    /* Migliorie per schermi piccoli (smartphone) */
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.95rem;
+      }
+      fieldset {
+        margin-bottom: 12px;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h2>Calcolo punteggio – Area Funzionari e dell’Elevata Qualificazione</h2>
+<h3>a cura del Mar. Ord. Carmine Santangelo</h3>
+<fieldset>
+  <legend>Tipo di procedura</legend>
+  <label>
+    <input type="radio" name="procedura" value="art13" checked>
+    Procedura straordinaria ex art. 13 CCNL
+  </label>
+  <label>
+    <input type="radio" name="procedura" value="art15">
+    Procedura comparativa ex art. 15 CCNL
+  </label>
+</fieldset>
+
+<!-- ESPERIENZA -->
+<fieldset>
+  <legend>Esperienza professionale</legend>
+  <label>
+    Anni di esperienza ULTERIORI rispetto al requisito minimo
+    (area/profilo di riferimento):
+    <input type="number" id="anniExtra" min="0" step="0.1" value="0">
+  </label>
+  <div class="block-score" id="scoreEsperienza"></div>
+</fieldset>
+
+<!-- PERFORMANCE (solo art. 15) -->
+<fieldset>
+  <legend>Performance individuale (solo art. 15)</legend>
+  <label>
+    Punteggio performance (0–20):
+    <input type="number" id="performance" min="0" max="20" step="0.1" value="0">
+  </label>
+  <div class="block-score" id="scorePerformance"></div>
+</fieldset>
+
+<!-- TITOLI DI STUDIO -->
+<fieldset>
+  <legend>Titolo di accesso e titoli ulteriori</legend>
+
+  <h4>Titolo di accesso alla procedura – Area Funzionari/EQ</h4>
+  <label>
+    Tipo di titolo di accesso:
+    <select id="tipoTitoloAccesso">
+      <option value="diploma">Diploma di scuola secondaria di II grado</option>
+      <option value="L">Laurea triennale (L)</option>
+      <option value="LM">Laurea magistrale / DL / LS / LM</option>
+    </select>
+  </label>
+  <label>
+    Voto del titolo di accesso:
+    <input type="number" id="votoAccesso" min="60" max="110" step="0.5" value="100">
+  </label>
+  <label>
+    <input type="checkbox" id="lodeAccesso">
+    con lode
+  </label>
+  <div class="block-score" id="scoreVotoAccesso"></div>
+
+  <h4>Titoli ulteriori (oltre il titolo di accesso)</h4>
+  <label>
+    Numero di lauree triennali ulteriori (se il titolo di accesso è diploma):
+    <input type="number" id="numLTriennali" min="0" step="1" value="0">
+  </label>
+  <label>
+    Numero di lauree DL/LS/LM ulteriori:
+    <input type="number" id="numLaureeLM" min="0" step="1" value="0">
+  </label>
+  <label>
+    Numero di Master universitari di I livello:
+    <input type="number" id="numMaster1" min="0" step="1" value="0">
+  </label>
+  <label>
+    Numero di Master di II livello / Dottorati / Scuole di Specializzazione:
+    <input type="number" id="numMaster2" min="0" step="1" value="0">
+  </label>
+  <div class="block-score" id="scoreTitoliUlteriori"></div>
+</fieldset>
+
+<!-- COMPETENZE PROFESSIONALI -->
+<fieldset>
+  <legend>Competenze professionali e incarichi</legend>
+
+  <h4>Competenze professionali (art. 13 e art. 15)</h4>
+  <label>
+    Numero incarichi formali attinenti al profilo:
+    <input type="number" id="numIncarichi" min="0" step="1" value="0">
+  </label>
+  <label>
+    Abilitazione ad albo professionale (0 = no, 1 = sì):
+    <input type="number" id="abilitazione" min="0" max="1" step="1" value="0">
+  </label>
+  <label>
+    Numero certificazioni informatiche (0,25 punti ciascuna – max 0,5):
+    <input type="number" id="numCertInformatica" min="0" step="1" value="0">
+  </label>
+  <label>
+    Numero certificazioni linguistiche QCER ≥ B1 (0,25 punti ciascuna – max 0,5):
+    <input type="number" id="numCertLingue" min="0" step="1" value="0">
+  </label>
+  <label>
+    Punteggio colloquio (0–10, solo se previsto e svolto – art. 13):
+    <input type="number" id="punteggioColloquio" min="0" max="10" step="0.1" value="0">
+  </label>
+  <div class="block-score" id="scoreCompetenze"></div>
+</fieldset>
+
+<button onclick="calcola()">Calcola punteggio</button>
+
+<div class="result" id="risultatoTotale"></div>
+
+<script>
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function calcola() {
+  const procedura = document.querySelector('input[name="procedura"]:checked').value;
+
+  // ESPERIENZA
+  const anniExtra = parseFloat(document.getElementById('anniExtra').value) || 0;
+  let punteggioEsperienza;
+  if (procedura === 'art13') {
+    // art. 13: 1,60 punti per anno ulteriore, max 40 [file:1]
+    punteggioEsperienza = anniExtra * 1.6;
+    punteggioEsperienza = clamp(punteggioEsperienza, 0, 40);
+  } else {
+    // art. 15: schema semplificato – 1 punto per anno extra, max 25 [file:1]
+    punteggioEsperienza = clamp(anniExtra, 0, 25);
+  }
+  document.getElementById('scoreEsperienza').textContent =
+    'Punteggio esperienza: ' + punteggioEsperienza.toFixed(2);
+
+  // PERFORMANCE (solo art. 15, max 20) [file:1]
+  let punteggioPerformance = 0;
+  if (procedura === 'art15') {
+    punteggioPerformance = parseFloat(document.getElementById('performance').value) || 0;
+    punteggioPerformance = clamp(punteggioPerformance, 0, 20);
+    document.getElementById('scorePerformance').textContent =
+      'Punteggio performance: ' + punteggioPerformance.toFixed(2);
+  } else {
+    document.getElementById('scorePerformance').textContent =
+      'Non rilevante per art. 13.';
+  }
+
+  // TITOLO DI ACCESSO [file:1]
+  const tipoTitoloAccesso = document.getElementById('tipoTitoloAccesso').value;
+  const votoAccesso = parseFloat(document.getElementById('votoAccesso').value) || 0;
+  const lodeAccesso = document.getElementById('lodeAccesso').checked;
+  let punteggioVotoAccesso = 0;
+
+  if (tipoTitoloAccesso === 'diploma') {
+    // Diploma – Area Funzionari/EQ (0,5–3 punti) [file:1]
+    if (votoAccesso >= 100)      punteggioVotoAccesso = 3;
+    else if (votoAccesso >= 90)  punteggioVotoAccesso = 2;
+    else if (votoAccesso >= 80)  punteggioVotoAccesso = 1.5;
+    else if (votoAccesso >= 70)  punteggioVotoAccesso = 1;
+    else if (votoAccesso >= 60)  punteggioVotoAccesso = 0.5;
+
+  } else if (tipoTitoloAccesso === 'L') {
+    // Laurea triennale – tabella Area Funzionari/EQ (max 6) [file:1]
+    if (votoAccesso >= 110 && lodeAccesso) punteggioVotoAccesso = 6;   // 110 e lode
+    else if (votoAccesso >= 103)           punteggioVotoAccesso = 5;
+    else if (votoAccesso >= 90)            punteggioVotoAccesso = 4;
+    else if (votoAccesso >= 80)            punteggioVotoAccesso = 3;
+    else if (votoAccesso >= 70)            punteggioVotoAccesso = 2;
+    else if (votoAccesso >= 60)            punteggioVotoAccesso = 1;
+
+  } else if (tipoTitoloAccesso === 'LM') {
+    // Laurea magistrale / DL / LS / LM – tabella Area Funzionari/EQ (max 10) [file:1]
+    if (votoAccesso >= 110 && lodeAccesso) punteggioVotoAccesso = 10;  // 110 e lode
+    else if (votoAccesso >= 103)           punteggioVotoAccesso = 9;
+    else if (votoAccesso >= 90)            punteggioVotoAccesso = 8;
+    else if (votoAccesso >= 80)            punteggioVotoAccesso = 7.5;
+    else if (votoAccesso >= 70)            punteggioVotoAccesso = 7;
+    else if (votoAccesso >= 60)            punteggioVotoAccesso = 6.5;
+  }
+
+  // Tetto regolamentare: max 10 punti per il titolo di accesso [file:1]
+  punteggioVotoAccesso = clamp(punteggioVotoAccesso, 0, 10);
+  document.getElementById('scoreVotoAccesso').textContent =
+    'Punteggio titolo di accesso: ' + punteggioVotoAccesso.toFixed(2);
+
+  // TITOLI ULTERIORI (max 20) [file:1]
+  const numLTriennali = parseFloat(document.getElementById('numLTriennali').value) || 0;
+  const numLaureeLM   = parseFloat(document.getElementById('numLaureeLM').value) || 0;
+  const numMaster1    = parseFloat(document.getElementById('numMaster1').value) || 0;
+  const numMaster2    = parseFloat(document.getElementById('numMaster2').value) || 0;
+
+  let punteggioTitoliUlteriori = 0;
+
+  // Lauree ulteriori [file:1]
+  punteggioTitoliUlteriori += numLTriennali * 5;   // L ulteriore
+  punteggioTitoliUlteriori += numLaureeLM   * 10;  // LM/DL/LS ulteriore
+
+  // Master I: 1,5 punti ciascuno, max 3 punti totali
+  const puntiMaster1 = Math.min(numMaster1 * 1.5, 3);
+  // Master II / Dottorato / Specializzazione: 3 punti ciascuno, max 7 punti totali
+  const puntiMaster2 = Math.min(numMaster2 * 3, 7);
+
+  punteggioTitoliUlteriori += puntiMaster1 + puntiMaster2;
+
+  // Tetto generale titoli ulteriori: 20 punti [file:1]
+  punteggioTitoliUlteriori = clamp(punteggioTitoliUlteriori, 0, 20);
+  document.getElementById('scoreTitoliUlteriori').textContent =
+    'Punteggio titoli ulteriori: ' + punteggioTitoliUlteriori.toFixed(2) +
+    ' (di cui Master I: ' + puntiMaster1.toFixed(2) +
+    ', Master II/Dott/Spec: ' + puntiMaster2.toFixed(2) + ')';
+
+  // COMPETENZE PROFESSIONALI [file:1]
+  const numIncarichi       = parseFloat(document.getElementById('numIncarichi').value) || 0;
+  const abilitazione       = parseFloat(document.getElementById('abilitazione').value) || 0;
+  const numCertInformatica = parseFloat(document.getElementById('numCertInformatica').value) || 0;
+  const numCertLingue      = parseFloat(document.getElementById('numCertLingue').value) || 0;
+  const punteggioColloquio = parseFloat(document.getElementById('punteggioColloquio').value) || 0;
+
+  let puntiIncarichi, puntiAbilitazione, puntiInformatica, puntiLingue, puntiColloquio;
+
+  if (procedura === 'art13') {
+    // art. 13: competenze max 30 [file:1]
+    puntiIncarichi = Math.min(numIncarichi, 16); // 1 punto per incarico, max 16
+    puntiAbilitazione = abilitazione > 0 ? 3 : 0;
+    puntiInformatica = Math.min(numCertInformatica * 0.25, 0.5);
+    puntiLingue = Math.min(numCertLingue * 0.25, 0.5);
+    puntiColloquio = clamp(punteggioColloquio, 0, 10);
+
+    let sommaCompetenze = puntiIncarichi + puntiAbilitazione +
+                          puntiInformatica + puntiLingue + puntiColloquio;
+    sommaCompetenze = clamp(sommaCompetenze, 0, 30);
+
+    document.getElementById('scoreCompetenze').textContent =
+      'Punteggio competenze (art. 13): ' + sommaCompetenze.toFixed(2);
+
+    // TOTALE art. 13 [file:1]
+    const totale = punteggioEsperienza +
+                   punteggioVotoAccesso +
+                   punteggioTitoliUlteriori +
+                   sommaCompetenze;
+
+    document.getElementById('risultatoTotale').textContent =
+      'TOTALE stimato (art. 13) = ' + totale.toFixed(2) + ' / 100';
+
+  } else {
+    // art. 15: blocchi A-B-C [file:1]
+    puntiIncarichi = Math.min(numIncarichi, 20); // Blocco C: max 20
+    puntiAbilitazione = abilitazione > 0 ? 3 : 0;
+    puntiInformatica = Math.min(numCertInformatica * 0.25, 0.5);
+    puntiLingue = Math.min(numCertLingue * 0.25, 0.5);
+    puntiColloquio = 0; // di norma non standard per art. 15
+
+    let sommaCompetenze = punteggioEsperienza + puntiAbilitazione +
+                          puntiInformatica + puntiLingue;
+    sommaCompetenze = clamp(sommaCompetenze, 0, 30);
+
+    document.getElementById('scoreCompetenze').textContent =
+      'Punteggio competenze (art. 15 – stimato): ' + sommaCompetenze.toFixed(2) +
+      ' | Punti incarichi (blocco C): ' + puntiIncarichi.toFixed(2);
+
+    const bloccoB = clamp(
+      punteggioVotoAccesso + punteggioTitoliUlteriori + sommaCompetenze,
+      0, 60
+    );
+
+    const totale = punteggioPerformance + bloccoB + puntiIncarichi;
+
+    document.getElementById('risultatoTotale').textContent =
+      'TOTALE stimato (art. 15) = ' + totale.toFixed(2) + ' / 100';
+  }
+}
+</script>
+
+</body>
+</html>
