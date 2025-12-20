@@ -470,24 +470,29 @@ function calcola() {
 
     mostraModal(testoTotale, dettagli);
 
-  } else {
+    } else {
+    // ==== ART. 15 ====
     puntiIncarichi = Math.min(numIncarichi, 20);
     puntiAbilitazione = abilitazione > 0 ? 3 : 0;
     puntiInformatica = Math.min(numCertInformatica * 0.25, 0.5);
     puntiLingue = Math.min(numCertLingue * 0.25, 0.5);
-    puntiColloquio = 0;
+    puntiColloquio = 0; // di norma non previsto
 
-    sommaCompetenze = 0; // nel tuo schema art. 15 hai scelto di conteggiare esperienze nel blocco esperienza
+    // Somma delle competenze “extra” (esclusi incarichi che stanno nel blocco C)
+    sommaCompetenze = puntiAbilitazione + puntiInformatica + puntiLingue;
+    sommaCompetenze = clamp(sommaCompetenze, 0, 30);
 
     document.getElementById('scoreCompetenze').textContent =
       'Punteggio competenze (art. 15 – stimato): ' + sommaCompetenze.toFixed(2) +
       ' | Incarichi (C): ' + puntiIncarichi.toFixed(2);
 
+    // Blocco B = titolo accesso + titoli ulteriori + competenze
     const bloccoB = clamp(
-      punteggioVotoAccesso + punteggioTitoliUlteriori,
+      punteggioVotoAccesso + punteggioTitoliUlteriori + sommaCompetenze,
       0, 60
     );
 
+    // Totale = Esperienza (max 25) + Performance (A) + B + Incarichi (C)
     totale = punteggioEsperienza + punteggioPerformance + bloccoB + puntiIncarichi;
 
     const testoTotale = 'Totale stimato (art. 15): ' + totale.toFixed(2) + ' / 100';
@@ -503,10 +508,11 @@ function calcola() {
         <li>Punteggio performance: <strong>${punteggioPerformance.toFixed(2)}</strong></li>
       </ul>
 
-      <h4>Blocco B – Titoli</h4>
+      <h4>Blocco B – Titoli e competenze</h4>
       <ul>
         <li>Punteggio titolo di accesso: <strong>${punteggioVotoAccesso.toFixed(2)}</strong></li>
         <li>Punteggio titoli ulteriori: <strong>${punteggioTitoliUlteriori.toFixed(2)}</strong></li>
+        <li>Competenze (abilitazione + informatica + lingua): <strong>${sommaCompetenze.toFixed(2)}</strong></li>
         <li>Punteggio totale blocco B: <strong>${bloccoB.toFixed(2)}</strong></li>
       </ul>
 
@@ -518,6 +524,7 @@ function calcola() {
 
     mostraModal(testoTotale, dettagli);
   }
+
 }
 </script>
 
