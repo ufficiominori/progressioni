@@ -300,7 +300,7 @@ function nuovoCalcolo() {
   document.getElementById('numCertLingue').value = 0;
   document.getElementById('punteggioColloquio').value = 0;
 
-  // Pulisci testi di dettaglio
+  // Pulisci testi di dettaglio sul form
   document.getElementById('scoreEsperienza').textContent = '';
   document.getElementById('scorePerformance').textContent = '';
   document.getElementById('scoreVotoAccesso').textContent = '';
@@ -322,17 +322,15 @@ function calcola() {
   let anniExtra = 0;
 
   if (!isNaN(annoAssunzione) && annoAssunzione <= annoRiferimento) {
-    anniServizio = annoRiferimento - annoAssunzione;      // es. 2025 - 2000 = 25 anni
-    anniExtra = Math.max(anniServizio - 3, 0);            // es. 25 - 3 = 22
+    anniServizio = annoRiferimento - annoAssunzione;
+    anniExtra = Math.max(anniServizio - 3, 0);
   }
 
   let punteggioEsperienza;
   if (procedura === 'art13') {
-    // art. 13: 1,60 punti per anno ulteriore, max 40
     punteggioEsperienza = anniExtra * 1.6;
     punteggioEsperienza = clamp(punteggioEsperienza, 0, 40);
   } else {
-    // art. 15: 1 punto per anno extra, max 25
     punteggioEsperienza = clamp(anniExtra, 0, 25);
   }
 
@@ -417,7 +415,6 @@ function calcola() {
   const punteggioColloquio = parseFloat(document.getElementById('punteggioColloquio').value) || 0;
 
   let puntiIncarichi, puntiAbilitazione, puntiInformatica, puntiLingue, puntiColloquio;
-
   let sommaCompetenze;
   let totale;
 
@@ -442,12 +439,28 @@ function calcola() {
 
     const testoTotale = 'Totale stimato (art. 13): ' + totale.toFixed(2) + ' / 100';
 
+    // Dettagli PER BLOCCO per art. 13
     const dettagli = `
+      <h4>Blocco Esperienza</h4>
       <ul>
-        <li>Esperienza: <strong>${punteggioEsperienza.toFixed(2)}</strong></li>
-        <li>Titolo di accesso: <strong>${punteggioVotoAccesso.toFixed(2)}</strong></li>
-        <li>Titoli ulteriori: <strong>${punteggioTitoliUlteriori.toFixed(2)}</strong></li>
-        <li>Competenze: <strong>${sommaCompetenze.toFixed(2)}</strong></li>
+        <li>Punteggio esperienza: <strong>${punteggioEsperienza.toFixed(2)}</strong></li>
+      </ul>
+
+      <h4>Blocco Titolo di accesso</h4>
+      <ul>
+        <li>Punteggio titolo di accesso: <strong>${punteggioVotoAccesso.toFixed(2)}</strong></li>
+      </ul>
+
+      <h4>Blocco Titoli ulteriori</h4>
+      <ul>
+        <li>Punteggio complessivo titoli ulteriori: <strong>${punteggioTitoliUlteriori.toFixed(2)}</strong></li>
+        <li>Master I livello: <strong>${puntiMaster1.toFixed(2)}</strong></li>
+        <li>Master II/Dott./Spec.: <strong>${puntiMaster2.toFixed(2)}</strong></li>
+      </ul>
+
+      <h4>Blocco Competenze professionali</h4>
+      <ul>
+        <li>Punteggio competenze (incarichi, abilitazioni, cert., colloquio): <strong>${sommaCompetenze.toFixed(2)}</strong></li>
       </ul>
     `;
 
@@ -477,11 +490,29 @@ function calcola() {
 
     const testoTotale = 'Totale stimato (art. 15): ' + totale.toFixed(2) + ' / 100';
 
+    // Dettagli PER BLOCCO per art. 15
     const dettagli = `
+      <h4>Blocco Esperienza</h4>
       <ul>
-        <li>Performance (A): <strong>${punteggioPerformance.toFixed(2)}</strong></li>
-        <li>Anzianità + Titoli + Competenze (B): <strong>${bloccoB.toFixed(2)}</strong></li>
-        <li>Incarichi (C): <strong>${puntiIncarichi.toFixed(2)}</strong></li>
+        <li>Punteggio esperienza: <strong>${punteggioEsperienza.toFixed(2)}</strong></li>
+      </ul>
+
+      <h4>Blocco A – Performance individuale</h4>
+      <ul>
+        <li>Punteggio performance: <strong>${punteggioPerformance.toFixed(2)}</strong></li>
+      </ul>
+
+      <h4>Blocco B – Titoli e competenze</h4>
+      <ul>
+        <li>Punteggio titolo di accesso: <strong>${punteggioVotoAccesso.toFixed(2)}</strong></li>
+        <li>Punteggio titoli ulteriori: <strong>${punteggioTitoliUlteriori.toFixed(2)}</strong></li>
+        <li>Competenze (esperienza extra + abilitazioni + cert.): <strong>${sommaCompetenze.toFixed(2)}</strong></li>
+        <li>Punteggio totale blocco B: <strong>${bloccoB.toFixed(2)}</strong></li>
+      </ul>
+
+      <h4>Blocco C – Incarichi</h4>
+      <ul>
+        <li>Punteggio incarichi formalmente attribuiti: <strong>${puntiIncarichi.toFixed(2)}</strong></li>
       </ul>
     `;
 
