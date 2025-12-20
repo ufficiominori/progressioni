@@ -326,18 +326,23 @@ function calcola() {
     anniExtra = Math.max(anniServizio - 3, 0);
   }
 
+  // Calcolo punteggio esperienza per singola procedura
   let punteggioEsperienza;
   if (procedura === 'art13') {
+    // art. 13: 1,60 punti per anno ulteriore
     punteggioEsperienza = anniExtra * 1.6;
-    punteggioEsperienza = clamp(punteggioEsperienza, 0, 40);
   } else {
-    punteggioEsperienza = clamp(anniExtra, 0, 25);
+    // art. 15: 1 punto per anno extra
+    punteggioEsperienza = anniExtra;
   }
+
+  // Limite generale: scoreEsperienza non può essere > 25
+  punteggioEsperienza = clamp(punteggioEsperienza, 0, 25);
 
   document.getElementById('scoreEsperienza').textContent =
     'Anni di servizio: ' + anniServizio +
     ' | Anni utili (oltre i 3): ' + anniExtra.toFixed(2) +
-    ' | Punteggio esperienza: ' + punteggioEsperienza.toFixed(2);
+    ' | Punteggio esperienza (max 25): ' + punteggioEsperienza.toFixed(2);
 
   // PERFORMANCE (solo art. 15, max 20)
   let punteggioPerformance = 0;
@@ -439,11 +444,10 @@ function calcola() {
 
     const testoTotale = 'Totale stimato (art. 13): ' + totale.toFixed(2) + ' / 100';
 
-    // Dettagli PER BLOCCO per art. 13
     const dettagli = `
       <h4>Blocco Esperienza</h4>
       <ul>
-        <li>Punteggio esperienza: <strong>${punteggioEsperienza.toFixed(2)}</strong></li>
+        <li>Punteggio esperienza (max 25): <strong>${punteggioEsperienza.toFixed(2)}</strong></li>
       </ul>
 
       <h4>Blocco Titolo di accesso</h4>
@@ -473,9 +477,7 @@ function calcola() {
     puntiLingue = Math.min(numCertLingue * 0.25, 0.5);
     puntiColloquio = 0;
 
-    sommaCompetenze = punteggioEsperienza + puntiAbilitazione +
-                      puntiInformatica + puntiLingue;
-    sommaCompetenze = clamp(sommaCompetenze, 0, 30);
+    sommaCompetenze = 0; // nel tuo schema art. 15 hai scelto di conteggiare esperienze nel blocco esperienza
 
     document.getElementById('scoreCompetenze').textContent =
       'Punteggio competenze (art. 15 – stimato): ' + sommaCompetenze.toFixed(2) +
@@ -486,15 +488,14 @@ function calcola() {
       0, 60
     );
 
-    totale = punteggioPerformance + bloccoB + puntiIncarichi;
+    totale = punteggioEsperienza + punteggioPerformance + bloccoB + puntiIncarichi;
 
     const testoTotale = 'Totale stimato (art. 15): ' + totale.toFixed(2) + ' / 100';
 
-    // Dettagli PER BLOCCO per art. 15
     const dettagli = `
       <h4>Blocco Esperienza</h4>
       <ul>
-        <li>Punteggio esperienza: <strong>${punteggioEsperienza.toFixed(2)}</strong></li>
+        <li>Punteggio esperienza (max 25): <strong>${punteggioEsperienza.toFixed(2)}</strong></li>
       </ul>
 
       <h4>Blocco A – Performance individuale</h4>
@@ -519,6 +520,7 @@ function calcola() {
   }
 }
 </script>
+
 
 </body>
 </html>
