@@ -12,10 +12,35 @@
       font-family: Arial, sans-serif;
       margin: 10px;
     }
+
+    /* COLORI DIVERSI PER SEZIONE */
     fieldset {
       margin-bottom: 15px;
       border-radius: 6px;
+      border: 1px solid #ccc;
+      padding: 10px;
     }
+    /* Tipo di procedura */
+    #fsProcedura {
+      background-color: #e6f2ff; /* azzurro chiaro */
+    }
+    /* Esperienza */
+    #fsEsperienza {
+      background-color: #e6ffe6; /* verde chiaro */
+    }
+    /* Performance */
+    #fsPerformance {
+      background-color: #fff0e6; /* arancio molto chiaro */
+    }
+    /* Titoli di studio */
+    #fsTitoli {
+      background-color: #fff5e6; /* crema */
+    }
+    /* Competenze */
+    #fsCompetenze {
+      background-color: #f3e6ff; /* lilla chiaro */
+    }
+
     legend {
       font-weight: bold;
     }
@@ -24,13 +49,13 @@
       margin-top: 5px;
     }
     input[type="number"], select {
-  	width: 50%;
-  	max-width: 260px;
-  	box-sizing: border-box;
-    font-size: 1.4rem;     /* testo molto più grande */
-  	padding: 8px 10px;     /* aumenta l’area cliccabile */
-    background-color: #FFF8DC; /* giallo paglierino */
-    border: 1px solid #ccc;
+      width: 50%;
+      max-width: 260px;
+      box-sizing: border-box;
+      font-size: 1.4rem;     /* testo grande */
+      padding: 8px 10px;     /* aumenta area cliccabile */
+      background-color: #FFF8DC; /* giallo paglierino */
+      border: 1px solid #ccc;
     }
 
     button {
@@ -39,13 +64,63 @@
       cursor: pointer;
     }
     .result {
-  	font-size: 1.6em;
-  	margin-top: 15px;
+      font-size: 1.6em;
+      margin-top: 15px;
     }
 
     .block-score {
       margin-top: 5px;
       font-style: italic;
+    }
+
+    /* POPUP (MODALE) RISULTATO */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;              /* nascosto di default */
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal {
+      background: #ffffff;
+      border-radius: 8px;
+      max-width: 420px;
+      width: 90%;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .modal h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .modal .result-text {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .modal .details {
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
     }
 
     /* Migliorie per schermi piccoli (smartphone) */
@@ -59,6 +134,15 @@
       button {
         width: 100%;
       }
+      .modal {
+        padding: 16px;
+      }
+      .modal-buttons {
+        justify-content: center;
+      }
+      .modal-buttons button {
+        flex: 1 1 auto;
+      }
     }
   </style>
 </head>
@@ -66,7 +150,8 @@
 
 <h2>Calcolo punteggio – Area Funzionari e dell’Elevata Qualificazione</h2>
 <h3>a cura del Mar. Ord. Carmine Santangelo</h3>
-<fieldset>
+
+<fieldset id="fsProcedura">
   <legend>Tipo di procedura</legend>
   <label>
     <input type="radio" name="procedura" value="art13" checked>
@@ -79,7 +164,7 @@
 </fieldset>
 
 <!-- ESPERIENZA -->
-<fieldset>
+<fieldset id="fsEsperienza">
   <legend>Esperienza professionale</legend>
   <label>
     Anni di esperienza ULTERIORI rispetto al requisito minimo dei 36 mesi
@@ -90,7 +175,7 @@
 </fieldset>
 
 <!-- PERFORMANCE (solo art. 15) -->
-<fieldset>
+<fieldset id="fsPerformance">
   <legend>Performance individuale (solo art. 15)</legend>
   <label>
     Punteggio performance (0–20):
@@ -100,7 +185,7 @@
 </fieldset>
 
 <!-- TITOLI DI STUDIO -->
-<fieldset>
+<fieldset id="fsTitoli">
   <legend>Titolo di accesso e titoli ulteriori</legend>
 
   <h4>Titolo di accesso alla procedura – Area Funzionari/EQ</h4>
@@ -143,7 +228,7 @@
 </fieldset>
 
 <!-- COMPETENZE PROFESSIONALI -->
-<fieldset>
+<fieldset id="fsCompetenze">
   <legend>Competenze professionali e incarichi</legend>
 
   <h4>Competenze professionali (art. 13 e art. 15)</h4>
@@ -172,11 +257,59 @@
 
 <button onclick="calcola()">Calcola punteggio</button>
 
-<div class="result" id="risultatoTotale"></div>
+<!-- MODALE RISULTATO -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Risultato del calcolo</h3>
+    <div class="result-text" id="modalTotale"></div>
+    <div class="details" id="modalDettagli"></div>
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="chiudiModal()">Chiudi</button>
+      <button class="btn-primary" onclick="nuovoCalcolo()">Nuovo calcolo</button>
+    </div>
+  </div>
+</div>
 
 <script>
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function mostraModal(testoTotale, dettagli) {
+  document.getElementById('modalTotale').textContent = testoTotale;
+  document.getElementById('modalDettagli').innerHTML = dettagli;
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+
+function chiudiModal() {
+  document.getElementById('modalOverlay').style.display = 'none';
+}
+
+function nuovoCalcolo() {
+  // Resetta tutti i campi
+  document.getElementById('anniExtra').value = 0;
+  document.getElementById('performance').value = 0;
+  document.getElementById('tipoTitoloAccesso').value = 'diploma';
+  document.getElementById('votoAccesso').value = 100;
+  document.getElementById('lodeAccesso').checked = false;
+  document.getElementById('numLTriennali').value = 0;
+  document.getElementById('numLaureeLM').value = 0;
+  document.getElementById('numMaster1').value = 0;
+  document.getElementById('numMaster2').value = 0;
+  document.getElementById('numIncarichi').value = 0;
+  document.getElementById('abilitazione').value = 0;
+  document.getElementById('numCertInformatica').value = 0;
+  document.getElementById('numCertLingue').value = 0;
+  document.getElementById('punteggioColloquio').value = 0;
+
+  // Pulisci testi di dettaglio
+  document.getElementById('scoreEsperienza').textContent = '';
+  document.getElementById('scorePerformance').textContent = '';
+  document.getElementById('scoreVotoAccesso').textContent = '';
+  document.getElementById('scoreTitoliUlteriori').textContent = '';
+  document.getElementById('scoreCompetenze').textContent = '';
+
+  chiudiModal();
 }
 
 function calcola() {
@@ -186,17 +319,17 @@ function calcola() {
   const anniExtra = parseFloat(document.getElementById('anniExtra').value) || 0;
   let punteggioEsperienza;
   if (procedura === 'art13') {
-    // art. 13: 1,60 punti per anno ulteriore, max 40 [file:1]
+    // art. 13: 1,60 punti per anno ulteriore, max 40
     punteggioEsperienza = anniExtra * 1.6;
     punteggioEsperienza = clamp(punteggioEsperienza, 0, 40);
   } else {
-    // art. 15: schema semplificato – 1 punto per anno extra, max 25 [file:1]
+    // art. 15: 1 punto per anno extra, max 25
     punteggioEsperienza = clamp(anniExtra, 0, 25);
   }
   document.getElementById('scoreEsperienza').textContent =
     'Punteggio esperienza: ' + punteggioEsperienza.toFixed(2);
 
-  // PERFORMANCE (solo art. 15, max 20) [file:1]
+  // PERFORMANCE (solo art. 15, max 20)
   let punteggioPerformance = 0;
   if (procedura === 'art15') {
     punteggioPerformance = parseFloat(document.getElementById('performance').value) || 0;
@@ -208,14 +341,13 @@ function calcola() {
       'Non rilevante per art. 13.';
   }
 
-  // TITOLO DI ACCESSO [file:1]
+  // TITOLO DI ACCESSO
   const tipoTitoloAccesso = document.getElementById('tipoTitoloAccesso').value;
   const votoAccesso = parseFloat(document.getElementById('votoAccesso').value) || 0;
   const lodeAccesso = document.getElementById('lodeAccesso').checked;
   let punteggioVotoAccesso = 0;
 
   if (tipoTitoloAccesso === 'diploma') {
-    // Diploma – Area Funzionari/EQ (0,5–3 punti) [file:1]
     if (votoAccesso >= 100)      punteggioVotoAccesso = 3;
     else if (votoAccesso >= 90)  punteggioVotoAccesso = 2;
     else if (votoAccesso >= 80)  punteggioVotoAccesso = 1.5;
@@ -223,8 +355,7 @@ function calcola() {
     else if (votoAccesso >= 60)  punteggioVotoAccesso = 0.5;
 
   } else if (tipoTitoloAccesso === 'L') {
-    // Laurea triennale – tabella Area Funzionari/EQ (max 6) [file:1]
-    if (votoAccesso >= 110 && lodeAccesso) punteggioVotoAccesso = 6;   // 110 e lode
+    if (votoAccesso >= 110 && lodeAccesso) punteggioVotoAccesso = 6;
     else if (votoAccesso >= 103)           punteggioVotoAccesso = 5;
     else if (votoAccesso >= 90)            punteggioVotoAccesso = 4;
     else if (votoAccesso >= 80)            punteggioVotoAccesso = 3;
@@ -232,8 +363,7 @@ function calcola() {
     else if (votoAccesso >= 60)            punteggioVotoAccesso = 1;
 
   } else if (tipoTitoloAccesso === 'LM') {
-    // Laurea magistrale / DL / LS / LM – tabella Area Funzionari/EQ (max 10) [file:1]
-    if (votoAccesso >= 110 && lodeAccesso) punteggioVotoAccesso = 10;  // 110 e lode
+    if (votoAccesso >= 110 && lodeAccesso) punteggioVotoAccesso = 10;
     else if (votoAccesso >= 103)           punteggioVotoAccesso = 9;
     else if (votoAccesso >= 90)            punteggioVotoAccesso = 8;
     else if (votoAccesso >= 80)            punteggioVotoAccesso = 7.5;
@@ -241,12 +371,11 @@ function calcola() {
     else if (votoAccesso >= 60)            punteggioVotoAccesso = 6.5;
   }
 
-  // Tetto regolamentare: max 10 punti per il titolo di accesso [file:1]
   punteggioVotoAccesso = clamp(punteggioVotoAccesso, 0, 10);
   document.getElementById('scoreVotoAccesso').textContent =
     'Punteggio titolo di accesso: ' + punteggioVotoAccesso.toFixed(2);
 
-  // TITOLI ULTERIORI (max 20) [file:1]
+  // TITOLI ULTERIORI (max 20)
   const numLTriennali = parseFloat(document.getElementById('numLTriennali').value) || 0;
   const numLaureeLM   = parseFloat(document.getElementById('numLaureeLM').value) || 0;
   const numMaster1    = parseFloat(document.getElementById('numMaster1').value) || 0;
@@ -254,25 +383,21 @@ function calcola() {
 
   let punteggioTitoliUlteriori = 0;
 
-  // Lauree ulteriori [file:1]
-  punteggioTitoliUlteriori += numLTriennali * 5;   // L ulteriore
-  punteggioTitoliUlteriori += numLaureeLM   * 10;  // LM/DL/LS ulteriore
+  punteggioTitoliUlteriori += numLTriennali * 5;
+  punteggioTitoliUlteriori += numLaureeLM   * 10;
 
-  // Master I: 1,5 punti ciascuno, max 3 punti totali
   const puntiMaster1 = Math.min(numMaster1 * 1.5, 3);
-  // Master II / Dottorato / Specializzazione: 3 punti ciascuno, max 7 punti totali
   const puntiMaster2 = Math.min(numMaster2 * 3, 7);
 
   punteggioTitoliUlteriori += puntiMaster1 + puntiMaster2;
 
-  // Tetto generale titoli ulteriori: 20 punti [file:1]
   punteggioTitoliUlteriori = clamp(punteggioTitoliUlteriori, 0, 20);
   document.getElementById('scoreTitoliUlteriori').textContent =
     'Punteggio titoli ulteriori: ' + punteggioTitoliUlteriori.toFixed(2) +
-    ' (di cui Master I: ' + puntiMaster1.toFixed(2) +
+    ' (Master I: ' + puntiMaster1.toFixed(2) +
     ', Master II/Dott/Spec: ' + puntiMaster2.toFixed(2) + ')';
 
-  // COMPETENZE PROFESSIONALI [file:1]
+  // COMPETENZE PROFESSIONALI
   const numIncarichi       = parseFloat(document.getElementById('numIncarichi').value) || 0;
   const abilitazione       = parseFloat(document.getElementById('abilitazione').value) || 0;
   const numCertInformatica = parseFloat(document.getElementById('numCertInformatica').value) || 0;
@@ -281,55 +406,74 @@ function calcola() {
 
   let puntiIncarichi, puntiAbilitazione, puntiInformatica, puntiLingue, puntiColloquio;
 
+  let sommaCompetenze;
+  let totale;
+
   if (procedura === 'art13') {
-    // art. 13: competenze max 30 [file:1]
-    puntiIncarichi = Math.min(numIncarichi, 16); // 1 punto per incarico, max 16
+    puntiIncarichi = Math.min(numIncarichi, 16);
     puntiAbilitazione = abilitazione > 0 ? 3 : 0;
     puntiInformatica = Math.min(numCertInformatica * 0.25, 0.5);
     puntiLingue = Math.min(numCertLingue * 0.25, 0.5);
     puntiColloquio = clamp(punteggioColloquio, 0, 10);
 
-    let sommaCompetenze = puntiIncarichi + puntiAbilitazione +
-                          puntiInformatica + puntiLingue + puntiColloquio;
+    sommaCompetenze = puntiIncarichi + puntiAbilitazione +
+                      puntiInformatica + puntiLingue + puntiColloquio;
     sommaCompetenze = clamp(sommaCompetenze, 0, 30);
 
     document.getElementById('scoreCompetenze').textContent =
       'Punteggio competenze (art. 13): ' + sommaCompetenze.toFixed(2);
 
-    // TOTALE art. 13 [file:1]
-    const totale = punteggioEsperienza +
-                   punteggioVotoAccesso +
-                   punteggioTitoliUlteriori +
-                   sommaCompetenze;
+    totale = punteggioEsperienza +
+             punteggioVotoAccesso +
+             punteggioTitoliUlteriori +
+             sommaCompetenze;
 
-    document.getElementById('risultatoTotale').textContent =
-      'TOTALE stimato (art. 13) = ' + totale.toFixed(2) + ' / 100';
+    const testoTotale = 'Totale stimato (art. 13): ' + totale.toFixed(2) + ' / 100';
+
+    const dettagli = `
+      <ul>
+        <li>Esperienza: <strong>${punteggioEsperienza.toFixed(2)}</strong></li>
+        <li>Titolo di accesso: <strong>${punteggioVotoAccesso.toFixed(2)}</strong></li>
+        <li>Titoli ulteriori: <strong>${punteggioTitoliUlteriori.toFixed(2)}</strong></li>
+        <li>Competenze: <strong>${sommaCompetenze.toFixed(2)}</strong></li>
+      </ul>
+    `;
+
+    mostraModal(testoTotale, dettagli);
 
   } else {
-    // art. 15: blocchi A-B-C [file:1]
-    puntiIncarichi = Math.min(numIncarichi, 20); // Blocco C: max 20
+    puntiIncarichi = Math.min(numIncarichi, 20);
     puntiAbilitazione = abilitazione > 0 ? 3 : 0;
     puntiInformatica = Math.min(numCertInformatica * 0.25, 0.5);
     puntiLingue = Math.min(numCertLingue * 0.25, 0.5);
-    puntiColloquio = 0; // di norma non standard per art. 15
+    puntiColloquio = 0;
 
-    let sommaCompetenze = punteggioEsperienza + puntiAbilitazione +
-                          puntiInformatica + puntiLingue;
+    sommaCompetenze = punteggioEsperienza + puntiAbilitazione +
+                      puntiInformatica + puntiLingue;
     sommaCompetenze = clamp(sommaCompetenze, 0, 30);
 
     document.getElementById('scoreCompetenze').textContent =
       'Punteggio competenze (art. 15 – stimato): ' + sommaCompetenze.toFixed(2) +
-      ' | Punti incarichi (blocco C): ' + puntiIncarichi.toFixed(2);
+      ' | Incarichi (C): ' + puntiIncarichi.toFixed(2);
 
     const bloccoB = clamp(
       punteggioVotoAccesso + punteggioTitoliUlteriori + sommaCompetenze,
       0, 60
     );
 
-    const totale = punteggioPerformance + bloccoB + puntiIncarichi;
+    totale = punteggioPerformance + bloccoB + puntiIncarichi;
 
-    document.getElementById('risultatoTotale').textContent =
-      'TOTALE stimato (art. 15) = ' + totale.toFixed(2) + ' / 100';
+    const testoTotale = 'Totale stimato (art. 15): ' + totale.toFixed(2) + ' / 100';
+
+    const dettagli = `
+      <ul>
+        <li>Performance (A): <strong>${punteggioPerformance.toFixed(2)}</strong></li>
+        <li>Blocco B (titoli + competenze): <strong>${bloccoB.toFixed(2)}</strong></li>
+        <li>Incarichi (C): <strong>${puntiIncarichi.toFixed(2)}</strong></li>
+      </ul>
+    `;
+
+    mostraModal(testoTotale, dettagli);
   }
 }
 </script>
