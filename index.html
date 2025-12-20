@@ -52,9 +52,8 @@
       width: 50%;
       max-width: 260px;
       box-sizing: border-box;
-      font-size: 1.4rem;     /* testo grande */
-      padding: 8px 10px;     /* aumenta area cliccabile */
-      /* background-color: #FFF8DC; /* giallo paglierino */
+      font-size: 1.4rem;
+      padding: 8px 10px;
       border: 1px solid #ccc;
     }
 
@@ -167,9 +166,8 @@
 <fieldset id="fsEsperienza">
   <legend>ESPERIENZA PROFESSIONALE</legend>
   <label>
-    Anni di esperienza ULTERIORI rispetto al requisito minimo dei 36 mesi
-    (area/profilo di riferimento):
-    <input type="number" id="anniExtra" min="0" step="0.1" value="0">
+    Anno di assunzione (es. 2000):
+    <input type="number" id="annoAssunzione" min="1900" max="2025" step="1" value="2000">
   </label>
   <div class="block-score" id="scoreEsperienza"></div>
 </fieldset>
@@ -287,7 +285,7 @@ function chiudiModal() {
 
 function nuovoCalcolo() {
   // Resetta tutti i campi
-  document.getElementById('anniExtra').value = 0;
+  document.getElementById('annoAssunzione').value = 2000;
   document.getElementById('performance').value = 0;
   document.getElementById('tipoTitoloAccesso').value = 'diploma';
   document.getElementById('votoAccesso').value = 100;
@@ -315,8 +313,19 @@ function nuovoCalcolo() {
 function calcola() {
   const procedura = document.querySelector('input[name="procedura"]:checked').value;
 
-  // ESPERIENZA
-  const anniExtra = parseFloat(document.getElementById('anniExtra').value) || 0;
+  // ======================
+  // ESPERIENZA AUTOMATICA
+  // ======================
+  const annoAssunzione = parseInt(document.getElementById('annoAssunzione').value, 10);
+  const annoRiferimento = 2025;
+  let anniServizio = 0;
+  let anniExtra = 0;
+
+  if (!isNaN(annoAssunzione) && annoAssunzione <= annoRiferimento) {
+    anniServizio = annoRiferimento - annoAssunzione;      // es. 2025 - 2000 = 25 anni
+    anniExtra = Math.max(anniServizio - 3, 0);            // es. 25 - 3 = 22
+  }
+
   let punteggioEsperienza;
   if (procedura === 'art13') {
     // art. 13: 1,60 punti per anno ulteriore, max 40
@@ -326,8 +335,11 @@ function calcola() {
     // art. 15: 1 punto per anno extra, max 25
     punteggioEsperienza = clamp(anniExtra, 0, 25);
   }
+
   document.getElementById('scoreEsperienza').textContent =
-    'Punteggio esperienza: ' + punteggioEsperienza.toFixed(2);
+    'Anni di servizio: ' + anniServizio +
+    ' | Anni utili (oltre i 3): ' + anniExtra.toFixed(2) +
+    ' | Punteggio esperienza: ' + punteggioEsperienza.toFixed(2);
 
   // PERFORMANCE (solo art. 15, max 20)
   let punteggioPerformance = 0;
@@ -468,7 +480,7 @@ function calcola() {
     const dettagli = `
       <ul>
         <li>Performance (A): <strong>${punteggioPerformance.toFixed(2)}</strong></li>
-        <li>Blocco B (titoli + competenze): <strong>${bloccoB.toFixed(2)}</strong></li>
+        <li>Anzianità + Titoli + Competenze (B): <strong>${bloccoB.toFixed(2)}</strong></li>
         <li>Incarichi (C): <strong>${puntiIncarichi.toFixed(2)}</strong></li>
       </ul>
     `;
