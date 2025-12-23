@@ -2,215 +2,391 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Calcolo punteggio (in aggiornamento) – Progressione Area Funzionari/EQ</title>
+  <title>Calcolo punteggio – Progressione Area Funzionari/EQ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 10px;
+    :root {
+      --bg-page: #f3f4f6;
+      --bg-card: #ffffff;
+      --border-soft: #e5e7eb;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #b91c1c;
     }
-    fieldset {
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      padding: 10px;
-    }
-    #fsProcedura { background-color: #e6f2ff; }
-    #fsPerformance { background-color: #e6ffe6; }
-    #fsBlocchiB { background-color: #fff5e6; }
-    #fsIncarichi { background-color: #f3e6ff; }
 
-    legend { font-weight: bold; }
-    label { display: block; margin-top: 5px; }
-    input[type="number"], select {
-      width: 50%;
-      max-width: 260px;
+    * {
       box-sizing: border-box;
-      font-size: 1.1rem;
-      padding: 6px 8px;
-      border: 1px solid #ccc;
     }
-    button {
-      padding: 10px 16px;
-      font-size: 1rem;
-      cursor: pointer;
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: radial-gradient(circle at top, #e0f2fe 0, #f9fafb 40%, #f3f4f6 100%);
+      color: var(--text-main);
     }
+
+    .page-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      margin: 0 0 4px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    h3 {
+      margin: 0 0 4px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    h4 {
+      margin: 8px 0;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    h5 {
+      margin: 4px 0;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .notice {
+      margin: 8px 0 16px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: #fef3c7;
+      border: 1px solid #fbbf24;
+      color: #92400e;
+      font-size: 0.85rem;
+    }
+
+    fieldset {
+      margin-bottom: 16px;
+      padding: 16px 16px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-card);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    legend {
+      padding: 0 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+
+    #fsProcedura { border-left: 4px solid #38bdf8; }
+    #fsPerformance { border-left: 4px solid #22c55e; }
+    #fsBlocchiB { border-left: 4px solid #f97316; }
+    #fsIncarichi { border-left: 4px solid #8b5cf6; }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .radio-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 6px;
+    }
+
+    .radio-row label {
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+      margin-top: 0;
+      font-weight: 500;
+    }
+
+    input[type="number"], select {
+      max-width: 280px;
+      font-size: 0.95rem;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+      background: #ffffff;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 6px;
+    }
+
     .block-score {
-      margin-top: 5px;
+      margin-top: 6px;
       font-style: italic;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.12s ease, background 0.12s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #2563eb, #4f46e5);
+      color: #ffffff;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 24px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+      transform: translateY(-1px);
     }
 
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.45);
+      background: rgba(15, 23, 42, 0.55);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 999;
     }
+
     .modal {
       background: #ffffff;
-      border-radius: 8px;
-      max-width: 480px;
-      width: 90%;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      border-radius: 16px;
+      max-width: 520px;
+      width: 92%;
+      padding: 20px 20px 16px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.4);
+      border: 1px solid #e5e7eb;
+      animation: fadeInUp 0.2s ease-out;
     }
-    .modal h3 { margin-top: 0; margin-bottom: 10px; }
+
+    .modal h3 {
+      margin-top: 0;
+      margin-bottom: 4px;
+      font-size: 1.1rem;
+    }
+
     .modal .result-text {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-      font-weight: bold;
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--accent);
     }
+
     .modal .details {
-      font-size: 0.95rem;
-      margin-bottom: 15px;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      max-height: 360px;
+      overflow-y: auto;
     }
+
+    .modal .details h4 {
+      margin-top: 10px;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .modal .details ul {
+      padding-left: 18px;
+      margin: 0 0 6px;
+      font-size: 0.88rem;
+    }
+
     .modal-buttons {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: flex-end;
       flex-wrap: wrap;
+      margin-top: 4px;
     }
-    .btn-primary, .btn-secondary {
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      padding: 8px 12px;
-      cursor: pointer;
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .btn-primary { background-color: #007bff; }
-    .btn-secondary { background-color: #6c757d; }
 
     @media (max-width: 600px) {
-      body { font-size: 0.95rem; }
-      fieldset { margin-bottom: 12px; }
-      button { width: 100%; }
-      .modal { padding: 16px; }
-      .modal-buttons { justify-content: center; }
-      .modal-buttons button { flex: 1 1 auto; }
+      body { padding: 10px; }
+      input[type="number"], select { width: 100%; max-width: none; }
+      .btn-bar { flex-direction: column; }
+      button { width: 100%; justify-content: center; }
     }
   </style>
 </head>
 <body>
+<div class="page-container">
 
-<h2>Calcolo punteggio (in aggiornamento) – Area Funzionari e dell’Elevata Qualificazione</h2>
-<h3>a cura del Mar. Ord. Carmine Santangelo</h3>
-<h4>N.B.: il programma è in fase di aggiornamento e verifica, pertanto potrebbe riportare risultati errati</h4>
+  <h2>Calcolo punteggio – Area Funzionari/Elevata Qualificazione</h2>
+  <h3>a cura del Mar. Ord. Carmine Santangelo</h3>
+  <div class="notice">
+    N.B.: il programma è in fase di aggiornamento e verifica, pertanto potrebbe riportare risultati non perfettamente corrispondenti al regolamento vigente.
+  </div>
 
-<!-- TIPO PROCEDURA -->
-<fieldset id="fsProcedura">
-  <legend>TIPO DI PROCEDURA</legend>
-  <label>
-    <input type="radio" name="procedura" value="art15" checked>
-    Procedura comparativa ex art. 15 CCNL
-  </label>
-  <label>
-    <input type="radio" name="procedura" value="art13">
-    Procedura straordinaria ex art. 13 CCNL
-  </label>
-</fieldset>
+  <!-- TIPO PROCEDURA -->
+  <fieldset id="fsProcedura">
+    <legend>TIPO DI PROCEDURA</legend>
+    <div class="radio-row">
+      <label>
+        <input type="radio" name="procedura" value="art15" checked>
+        Procedura comparativa ex art. 15 CCNL
+      </label>
+      <label>
+        <input type="radio" name="procedura" value="art13">
+        Procedura straordinaria ex art. 13 CCNL
+      </label>
+    </div>
+  </fieldset>
 
-<!-- A - PERFORMANCE -->
-<fieldset id="fsPerformance">
-  <legend>A – VALUTAZIONE DELLA PERFORMANCE (solo art. 15 – max 20)</legend>
-  <label>
-    Punteggio performance (0–20):
-    <input type="number" id="performance" min="0" max="20" step="0.1" value="0">
-  </label>
-  <div class="block-score" id="scorePerformance"></div>
-</fieldset>
+  <!-- A - PERFORMANCE -->
+  <fieldset id="fsPerformance">
+    <legend>A – VALUTAZIONE DELLA PERFORMANCE (solo art. 15 – max 20)</legend>
+    <label>
+      Punteggio performance (0–20):
+      <input type="number" id="performance" min="0" max="20" step="0.1" value="0">
+    </label>
+    <div class="block-score" id="scorePerformance"></div>
+  </fieldset>
 
-<!-- B - TITOLI E COMPETENZE -->
-<fieldset id="fsBlocchiB">
-  <legend>B – TITOLI E COMPETENZE PROFESSIONALI (max 60)</legend>
+  <!-- B - TITOLI E COMPETENZE -->
+  <fieldset id="fsBlocchiB">
+    <legend>B – TITOLI E COMPETENZE PROFESSIONALI (max 60)</legend>
 
-  <!-- B.1 TITOLI DI STUDIO -->
-  <h4>Titoli di studio (max 30)</h4>
+    <!-- B.1 TITOLI DI STUDIO -->
+    <h4>Titoli di studio (max 30)</h4>
 
-  <!-- B.1.2 VOTO TITOLO ACCESSO -->
-  <h5>B.1.2 Voto titolo di accesso (max 10)</h5>
-  <label>
-    Tipo di titolo di accesso (max 10 punti):
-    <select id="tipoTitoloAccesso">
-      <option value="diploma">Diploma di scuola secondaria di II grado</option>
-      <option value="L">Laurea triennale (L)</option>
-      <option value="LM">Laurea magistrale / DL / LS / LM</option>
-    </select>
-  </label>
-  <label>
-    Voto del titolo di accesso:
-    <input type="number" id="votoAccesso" min="60" max="110" step="0.5" value="100">
-  </label>
-  <label>
-    <input type="checkbox" id="lodeAccesso"> con lode
-  </label>
-  <div class="block-score" id="scoreVotoAccesso"></div>
+    <!-- B.1.2 VOTO TITOLO ACCESSO -->
+    <h5>B.1.2 Voto titolo di accesso (max 10)</h5>
+    <label>
+      Tipo di titolo di accesso:
+      <select id="tipoTitoloAccesso">
+        <option value="diploma">Diploma di scuola secondaria di II grado</option>
+        <option value="L">Laurea triennale (L)</option>
+        <option value="LM">Laurea magistrale / DL / LS / LM</option>
+      </select>
+    </label>
+    <label>
+      Voto del titolo di accesso:
+      <input type="number" id="votoAccesso" min="60" max="110" step="0.5" value="100">
+    </label>
+    <label>
+      <span><input type="checkbox" id="lodeAccesso"> con lode</span>
+    </label>
+    <div class="block-score" id="scoreVotoAccesso"></div>
 
-  <!-- B.1.3 TITOLI ULTERIORI -->
-  <h5>B.1.3 Titoli ulteriori (oltre il titolo di accesso – max 20)</h5>
-  <label>
-    Numero di lauree triennali ulteriori:
-    <input type="number" id="numLTriennali" min="0" step="1" value="0">
-  </label>
-  <label>
-    Numero di lauree DL/LS/LM ulteriori:
-    <input type="number" id="numLaureeLM" min="0" step="1" value="0">
-  </label>
-  <label>
-    Numero di Master universitari di I livello:
-    <input type="number" id="numMaster1" min="0" step="1" value="0">
-  </label>
-  <label>
-    Numero di Master di II livello / Dottorati / Scuole di Specializzazione:
-    <input type="number" id="numMaster2" min="0" step="1" value="0">
-  </label>
-  <div class="block-score" id="scoreTitoliUlteriori"></div>
+    <!-- B.1.3 TITOLI ULTERIORI -->
+    <h5>B.1.3 Titoli ulteriori (oltre il titolo di accesso – max 20)</h5>
+    <label>
+      Numero di lauree triennali ulteriori:
+      <input type="number" id="numLTriennali" min="0" step="1" value="0">
+    </label>
+    <label>
+      Numero di lauree DL/LS/LM ulteriori:
+      <input type="number" id="numLaureeLM" min="0" step="1" value="0">
+    </label>
+    <label>
+      Numero di Master universitari di I livello:
+      <input type="number" id="numMaster1" min="0" step="1" value="0">
+    </label>
+    <label>
+      Numero di Master di II livello / Dottorati / Scuole di Specializzazione:
+      <input type="number" id="numMaster2" min="0" step="1" value="0">
+    </label>
+    <div class="block-score" id="scoreTitoliUlteriori"></div>
 
-  <!-- B.2 COMPETENZE PROFESSIONALI -->
-  <h4>Competenze professionali (max 30)</h4>
+    <!-- B.2 COMPETENZE PROFESSIONALI -->
+    <h4>Competenze professionali (max 30)</h4>
 
-  <label>
-    Anno di assunzione (es. 2000 – esperienza max 25 punti):
-    <input type="number" id="annoAssunzione" min="1900" max="2025" step="1" value="2000">
-  </label>
-  <label>
-    Abilitazione ad albo professionale (0 = no, 1 = sì – max 3 punti):
-    <input type="number" id="abilitazione" min="0" max="1" step="1" value="0">
-  </label>
-  <label>
-    Numero certificazioni informatiche (0,25 punti ciascuna – max 0,5 punti):
-    <input type="number" id="numCertInformatica" min="0" step="1" value="0">
-  </label>
-  <label>
-    Numero certificazioni linguistiche QCER ≥ B1 (0,25 punti ciascuna – max 0,5 punti):
-    <input type="number" id="numCertLingue" min="0" step="1" value="0">
-  </label>
-  <label>
-    Idoneità in selezioni a tempo indeterminato (0 = no, 1 = sì – max 1 punto):
-    <input type="number" id="idoneitaSelezione" min="0" max="1" step="1" value="0">
-  </label>
-  <label>
-    Punteggio colloquio (0–10, solo art. 13 – rientra nel limite di B max 60):
-    <input type="number" id="punteggioColloquio" min="0" max="10" step="0.1" value="0">
-  </label>
+    <label>
+      Anno di assunzione (es. 2000 – esperienza max 25 punti):
+      <input type="number" id="annoAssunzione" min="1900" max="2025" step="1" value="2000">
+    </label>
+    <label>
+      Abilitazione ad albo professionale (0 = no, 1 = sì – max 3 punti):
+      <input type="number" id="abilitazione" min="0" max="1" step="1" value="0">
+    </label>
+    <label>
+      Numero certificazioni informatiche (0,25 punti ciascuna – max 0,5 punti):
+      <input type="number" id="numCertInformatica" min="0" step="1" value="0">
+    </label>
+    <label>
+      Numero certificazioni linguistiche QCER ≥ B1 (0,25 punti ciascuna – max 0,5 punti):
+      <input type="number" id="numCertLingue" min="0" step="1" value="0">
+    </label>
+    <label>
+      Idoneità in selezioni a tempo indeterminato (0 = no, 1 = sì – max 1 punto):
+      <input type="number" id="idoneitaSelezione" min="0" max="1" step="1" value="0">
+    </label>
+    <label>
+      Punteggio colloquio (0–10, solo art. 13 – rientra nel limite di B max 60):
+      <input type="number" id="punteggioColloquio" min="0" max="10" step="0.1" value="0">
+    </label>
 
-  <div class="block-score" id="scoreCompetenze"></div>
-</fieldset>
+    <div class="block-score" id="scoreCompetenze"></div>
+  </fieldset>
 
-<!-- C - INCARICHI -->
-<fieldset id="fsIncarichi">
-  <legend>C – INCARICHI RIVESTITI (max 20)</legend>
-  <label>
-    Numero incarichi formali attinenti al profilo:
-    <input type="number" id="numIncarichi" min="0" step="1" value="0">
-  </label>
-  <div class="block-score" id="scoreIncarichi"></div>
-</fieldset>
+  <!-- C - INCARICHI -->
+  <fieldset id="fsIncarichi">
+    <legend>C – INCARICHI RIVESTITI (max 20)</legend>
+    <label>
+      Numero incarichi formali attinenti al profilo:
+      <input type="number" id="numIncarichi" min="0" step="1" value="0">
+    </label>
+    <div class="block-score" id="scoreIncarichi"></div>
+  </fieldset>
 
-<button onclick="calcola()">Calcola punteggio</button>
+  <div class="btn-bar">
+    <button class="btn-primary" onclick="calcola()">Calcola punteggio</button>
+    <button class="btn-secondary" onclick="nuovoCalcolo()">Nuovo calcolo</button>
+  </div>
+
+</div>
 
 <!-- MODALE RISULTATO -->
 <div class="modal-overlay" id="modalOverlay">
@@ -267,7 +443,7 @@ function nuovoCalcolo() {
 function calcola() {
   const procedura = document.querySelector('input[name="procedura"]:checked').value;
 
-  // B.2 – ESPERIENZA (dentro competenze, max 25)
+  // ESPERIENZA dentro B.2
   const annoAssunzione = parseInt(document.getElementById('annoAssunzione').value, 10);
   const annoRiferimento = 2025;
   let anniServizio = 0;
@@ -278,17 +454,17 @@ function calcola() {
   }
   let puntiEsperienza;
   if (procedura === 'art13') {
-    puntiEsperienza = anniExtra * 1.6;     // art.13: 1,6 per anno extra, max 40 da regolamento
+    puntiEsperienza = anniExtra * 1.6;
   } else {
-    puntiEsperienza = anniExtra;           // art.15: 1 per anno extra, max 25 da regolamento
+    puntiEsperienza = anniExtra;
   }
-  puntiEsperienza = clamp(puntiEsperienza, 0, 25);  // limite esperienza in B.2 art.15 [file:1]
+  puntiEsperienza = clamp(puntiEsperienza, 0, 25);
 
-  // A – PERFORMANCE (solo art.15)
+  // A – PERFORMANCE
   let punteggioPerformance = 0;
   if (procedura === 'art15') {
     punteggioPerformance = parseFloat(document.getElementById('performance').value) || 0;
-    punteggioPerformance = clamp(punteggioPerformance, 0, 20);   // max 20 [file:1]
+    punteggioPerformance = clamp(punteggioPerformance, 0, 20);
     document.getElementById('scorePerformance').textContent =
       'A – Performance: ' + punteggioPerformance.toFixed(2);
   } else {
@@ -296,7 +472,7 @@ function calcola() {
       'A – Non rilevante per art. 13';
   }
 
-  // B.1.2 – VOTO TITOLO DI ACCESSO (max 10)
+  // B.1.2 – VOTO TITOLO DI ACCESSO
   const tipoTitoloAccesso = document.getElementById('tipoTitoloAccesso').value;
   const votoAccesso = parseFloat(document.getElementById('votoAccesso').value) || 0;
   const lodeAccesso = document.getElementById('lodeAccesso').checked;
@@ -323,11 +499,11 @@ function calcola() {
     else if (votoAccesso >= 70)            punteggioVotoAccesso = 7;
     else if (votoAccesso >= 60)            punteggioVotoAccesso = 6.5;
   }
-  punteggioVotoAccesso = clamp(punteggioVotoAccesso, 0, 10);  // max 10 [file:1]
+  punteggioVotoAccesso = clamp(punteggioVotoAccesso, 0, 10);
   document.getElementById('scoreVotoAccesso').textContent =
     'B.1.2 Voto titolo di accesso: ' + punteggioVotoAccesso.toFixed(2);
 
-  // B.1.3 – TITOLI ULTERIORI (max 20)
+  // B.1.3 – TITOLI ULTERIORI
   const numLTriennali = parseFloat(document.getElementById('numLTriennali').value) || 0;
   const numLaureeLM   = parseFloat(document.getElementById('numLaureeLM').value) || 0;
   const numMaster1    = parseFloat(document.getElementById('numMaster1').value) || 0;
@@ -339,54 +515,52 @@ function calcola() {
   const puntiMaster1 = Math.min(numMaster1 * 1.5, 3);
   const puntiMaster2 = Math.min(numMaster2 * 3, 7);
   punteggioTitoliUlteriori += puntiMaster1 + puntiMaster2;
-  punteggioTitoliUlteriori = clamp(punteggioTitoliUlteriori, 0, 20); // max 20 [file:1]
-
+  punteggioTitoliUlteriori = clamp(punteggioTitoliUlteriori, 0, 20);
   document.getElementById('scoreTitoliUlteriori').textContent =
     'B.1.3 Titoli ulteriori: ' + punteggioTitoliUlteriori.toFixed(2);
 
-  // B.2 – COMPETENZE PROFESSIONALI (esperienza + abil. + inf. + lingue + idoneità + colloquio art.13)
+  // B.2 – COMPETENZE PROFESSIONALI
   const abilitazione       = parseFloat(document.getElementById('abilitazione').value) || 0;
   const numCertInformatica = parseFloat(document.getElementById('numCertInformatica').value) || 0;
   const numCertLingue      = parseFloat(document.getElementById('numCertLingue').value) || 0;
   const idoneitaSelezione  = parseFloat(document.getElementById('idoneitaSelezione').value) || 0;
   const punteggioColloquio = parseFloat(document.getElementById('punteggioColloquio').value) || 0;
 
-  const puntiAbilitazione = abilitazione > 0 ? 3 : 0;                          // max 3 [file:1]
-  const puntiInformatica  = clamp(numCertInformatica * 0.25, 0, 0.5);          // max 0,5 [file:1]
-  const puntiLingue       = clamp(numCertLingue * 0.25, 0, 0.5);               // max 0,5 [file:1]
-  const puntiIdoneita     = clamp(idoneitaSelezione, 0, 1);                    // max 1 [file:1]
+  const puntiAbilitazione = abilitazione > 0 ? 3 : 0;
+  const puntiInformatica  = clamp(numCertInformatica * 0.25, 0, 0.5);
+  const puntiLingue       = clamp(numCertLingue * 0.25, 0, 0.5);
+  const puntiIdoneita     = clamp(idoneitaSelezione, 0, 1);
   const puntiColloquio    = procedura === 'art13'
                               ? clamp(punteggioColloquio, 0, 10)
-                              : 0;                                             // colloquio solo art.13 [file:1]
+                              : 0;
 
   let b2_competenze = puntiEsperienza + puntiAbilitazione +
                       puntiInformatica + puntiLingue + puntiIdoneita +
                       puntiColloquio;
 
-  b2_competenze = clamp(b2_competenze, 0, 30);                                  // B.2 max 30 [file:1]
+  b2_competenze = clamp(b2_competenze, 0, 30);
 
-  // B.1 totale (titoli di studio, max 30)
-  const b1_titoliStudio = clamp(punteggioVotoAccesso + punteggioTitoliUlteriori, 0, 30); // [file:1]
+  // B.1 totale
+  const b1_titoliStudio = clamp(punteggioVotoAccesso + punteggioTitoliUlteriori, 0, 30);
 
-  // Blocco B totale (max 60)
-  const bloccoB = clamp(b1_titoliStudio + b2_competenze, 0, 60);                // [file:1]
+  // Blocco B totale
+  const bloccoB = clamp(b1_titoliStudio + b2_competenze, 0, 60);
 
   document.getElementById('scoreCompetenze').textContent =
     'B – Titoli e competenze: ' + bloccoB.toFixed(2) +
     ' (B.1: ' + b1_titoliStudio.toFixed(2) +
     ', B.2: ' + b2_competenze.toFixed(2) + ')';
 
-  // C – INCARICHI (solo incarichi formali)
+  // C – INCARICHI
   const numIncarichi = parseFloat(document.getElementById('numIncarichi').value) || 0;
-  const puntiIncarichi = clamp(numIncarichi, 0, 20);                            // max 20 [file:1]
+  const puntiIncarichi = clamp(numIncarichi, 0, 20);
   document.getElementById('scoreIncarichi').textContent =
     'C – Incarichi formali: ' + puntiIncarichi.toFixed(2);
 
-  // TOTALE E DETTAGLI PER ART.13 / ART.15
+  // TOTALE
   let totale, testoTotale, dettagli;
 
   if (procedura === 'art13') {
-    // per art.13 non c’è A, ma B comprende anche colloquio [file:1]
     totale = clamp(bloccoB + puntiIncarichi, 0, 100);
 
     testoTotale = 'Totale art. 13: ' + totale.toFixed(2) + ' / 100';
@@ -408,7 +582,6 @@ function calcola() {
       <h4>C – Incarichi (max 20): <strong>${puntiIncarichi.toFixed(2)}</strong></h4>
     `;
   } else {
-    // art.15: A + B + C, con esperienza in B.2 e senza colloquio [file:1]
     totale = clamp(punteggioPerformance + bloccoB + puntiIncarichi, 0, 100);
 
     testoTotale = 'Totale art. 15: ' + totale.toFixed(2) + ' / 100';
@@ -418,7 +591,7 @@ function calcola() {
       <ul>
         <li>B.1 Titoli di studio (max 30): ${b1_titoliStudio.toFixed(2)}
           <ul>
-            <li>B.1.2 Voto titolo accesso: ${punteggioVotoAccesso.toFixed(2)}</li>
+            <li>B.1.2 Voto titolo di accesso: ${punteggioVotoAccesso.toFixed(2)}</li>
             <li>B.1.3 Titoli ulteriori: ${punteggioTitoliUlteriori.toFixed(2)}</li>
           </ul>
         </li>
