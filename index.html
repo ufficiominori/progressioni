@@ -386,7 +386,8 @@
     <button class="btn-secondary" onclick="nuovoCalcolo()">Nuovo calcolo</button>
   </div>
 
-  <div id="calcCounter" class="block-score"></div>
+<!-- CONTATORE CALCOLO -->
+  <div id="calcCounter" class="block-score" style="text-align:right;"></div>
 
 </div>
 
@@ -404,7 +405,7 @@
 </div>
 
 <script>
-
+// definisci CONTATORE CALCOLO
 let numeroCalcoli = parseInt(localStorage.getItem('numeroCalcoli')) || 0;
 
 function aggiornaVisualCounter() {
