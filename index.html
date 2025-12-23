@@ -410,7 +410,7 @@ let numeroCalcoli = parseInt(localStorage.getItem('numeroCalcoli')) || 0;
 function aggiornaVisualCounter() {
   const el = document.getElementById('calcCounter');
   if (el) {
-    el.textContent = 'Calcoli effettuati: ' + numeroCalcoli;
+    el.textContent = 'Counter: ' + numeroCalcoli;
   }
 }
 
@@ -463,10 +463,7 @@ function calcola() {
   numeroCalcoli += 1;
   localStorage.setItem('numeroCalcoli', numeroCalcoli);
   aggiornaVisualCounter();
-
-  // ...qui tutto il codice di calcolo che hai già...
-}
-  
+    
   const procedura = document.querySelector('input[name="procedura"]:checked').value;
 
   // ESPERIENZA dentro B.2
