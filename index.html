@@ -399,10 +399,27 @@
       <button class="btn-primary" onclick="nuovoCalcolo()">Nuovo calcolo</button>
     </div>
   </div>
+
+<div id="calcCounter" class="block-score"></div>
+  
 </div>
 
 <script>
-function clamp(value, min, max) {
+
+let numeroCalcoli = parseInt(localStorage.getItem('numeroCalcoli')) || 0;
+
+function aggiornaVisualCounter() {
+  const el = document.getElementById('calcCounter');
+  if (el) {
+    el.textContent = 'Calcoli effettuati: ' + numeroCalcoli;
+  }
+}
+
+// aggiorna il testo alla prima apertura pagina
+aggiornaVisualCounter();
+  
+  
+  function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
@@ -441,6 +458,16 @@ function nuovoCalcolo() {
 }
 
 function calcola() {
+
+function calcola() {
+  // incrementa contatore calcoli
+  numeroCalcoli += 1;
+  localStorage.setItem('numeroCalcoli', numeroCalcoli);
+  aggiornaVisualCounter();
+
+  // ...qui tutto il codice di calcolo che hai già...
+}
+  
   const procedura = document.querySelector('input[name="procedura"]:checked').value;
 
   // ESPERIENZA dentro B.2
