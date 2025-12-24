@@ -266,7 +266,7 @@
   <h2>Calcolo punteggio – Area Funzionari/Elevata Qualificazione</h2>
   <h3>a cura del Mar. Ord. Carmine Santangelo</h3>
   <div class="notice">
-    N.B.: il programma è in fase di aggiornamento e potrebbe riportare risultati non perfettamente corrispondenti al regolamento.<br> Per info e segnalazioni carmine.santangelo@comune.napoli.it
+    N.B.: il calcolo allo stato attuale viene fatto secondo quanto indicato nel regolamento, sarà quindi definitivo quando sarà pubblicato il bando di selezione e verrà aggiornato.<br> Per info e segnalazioni carmine.santangelo@comune.napoli.it
   </div>
 
   <!-- TIPO PROCEDURA -->
@@ -386,11 +386,6 @@
     <button class="btn-secondary" onclick="nuovoCalcolo()">Nuovo calcolo</button>
   </div>
 
-<!-- CONTATORE CALCOLO -->
-  <div id="calcCounter" class="block-score" style="text-align:right;"></div>
-
-</div>
-
 <!-- MODALE RISULTATO -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
@@ -405,20 +400,6 @@
 </div>
 
 <script>
-// definisci CONTATORE CALCOLO
-let numeroCalcoli = parseInt(localStorage.getItem('numeroCalcoli')) || 0;
-
-function aggiornaVisualCounter() {
-  const el = document.getElementById('calcCounter');
-  if (el) {
-    el.textContent = 'Counter: ' + numeroCalcoli;
-  }
-}
-
-// aggiorna il testo alla prima apertura pagina
-aggiornaVisualCounter();
-  
-  
   function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
@@ -458,12 +439,7 @@ function nuovoCalcolo() {
 }
 
 function calcola() {
-
-  // incrementa contatore calcoli
-  numeroCalcoli += 1;
-  localStorage.setItem('numeroCalcoli', numeroCalcoli);
-  aggiornaVisualCounter();
-    
+     
   const procedura = document.querySelector('input[name="procedura"]:checked').value;
 
   // ESPERIENZA dentro B.2
