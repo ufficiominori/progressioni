@@ -608,6 +608,30 @@ function calcola() {
     `;
   }
 
+// --- INVIO LOG A GOOGLE SHEETS (globale) ---
+
+  const payload = {
+    procedura: procedura,                 // 'art13' o 'art15'
+    totale: totale,                       // totale calcolo
+    bloccoA: procedura === 'art15' ? punteggioPerformance : 0,
+    bloccoB: bloccoB,                     // già calcolato sopra
+    bloccoC: puntiIncarichi               // incarichi (C)
+  };
+
+  fetch('https://script.google.com/macros/s/AKfycbzSNDe96QDKDFVMeuJVC9-pEeyAUd3n9ybPSVsN-minbxF-5ChXQD4kSoYr80HKUyhR/exec', {  // <-- sostituisci con il tuo URL
+    method: 'POST',
+    mode: 'no-cors',                    // così non ti blocca per CORS
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  }).catch(err => {
+    // opzionale: log in console, senza bloccare l'utente
+    console.error('Errore invio log:', err);
+  });
+
+// --- FINEINVIO LOG A GOOGLE SHEETS (globale) ---
+  
   mostraModal(testoTotale, dettagli);
 }
 </script>
