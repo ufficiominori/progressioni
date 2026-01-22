@@ -266,7 +266,8 @@
   <h2>Calcolo punteggio – Area Funzionari/Elevata Qualificazione</h2>
   <h3>a cura del Mar. Ord. Carmine Santangelo</h3>
   <div class="notice">
-    N.B.: il calcolo allo stato attuale viene fatto secondo quanto indicato nel regolamento, sarà quindi definitivo quando sarà pubblicato il bando di selezione e verrà aggiornato.<br> Per info e segnalazioni carmine.santangelo@comune.napoli.it
+    N.B.: il calcolo allo stato attuale viene fatto secondo quanto indicato nel regolamento, sarà quindi definitivo quando sarà pubblicato il bando di selezione e verrà aggiornato.<br>
+    Per info e segnalazioni <a href="mailto:carmine.santangelo@comune.napoli.it">carmine.santangelo@comune.napoli.it</a>
   </div>
 
   <!-- TIPO PROCEDURA -->
@@ -287,9 +288,18 @@
   <!-- A - PERFORMANCE -->
   <fieldset id="fsPerformance">
     <legend>A – VALUTAZIONE DELLA PERFORMANCE (solo art. 15 – max 20)</legend>
+    <h5>Valutazioni della performance "solo individuale" (scala 0–42) – ultimi tre anni</h5>
     <label>
-      Punteggio performance (0–20):
-      <input type="number" id="performance" min="0" max="20" step="0.1" value="0">
+      Valutazione anno 1:
+      <input type="number" id="perfAnno1" min="0" max="42" step="0.01" value="0">
+    </label>
+    <label>
+      Valutazione anno 2:
+      <input type="number" id="perfAnno2" min="0" max="42" step="0.01" value="0">
+    </label>
+    <label>
+      Valutazione anno 3:
+      <input type="number" id="perfAnno3" min="0" max="42" step="0.01" value="0">
     </label>
     <div class="block-score" id="scorePerformance"></div>
   </fieldset>
@@ -335,8 +345,12 @@
       <input type="number" id="numMaster1" min="0" step="1" value="0">
     </label>
     <label>
-      Numero di Master di II livello / Dottorati / Scuole di Specializzazione:
+      Numero di Master di II livello (3 punti ciascuno):
       <input type="number" id="numMaster2" min="0" step="1" value="0">
+    </label>
+    <label>
+      Numero di Diploma di Specializzazione / Dottorato di Ricerca (3,5 punti ciascuno):
+      <input type="number" id="numSpecializzazione" min="0" step="1" value="0">
     </label>
     <div class="block-score" id="scoreTitoliUlteriori"></div>
 
@@ -386,21 +400,21 @@
     <button class="btn-secondary" onclick="nuovoCalcolo()">Nuovo calcolo</button>
   </div>
 
-<!-- MODALE RISULTATO -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <h3>Risultato del calcolo</h3>
-    <div class="result-text" id="modalTotale"></div>
-    <div class="details" id="modalDettagli"></div>
-    <div class="modal-buttons">
-      <button class="btn-secondary" onclick="chiudiModal()">Chiudi</button>
-      <button class="btn-primary" onclick="nuovoCalcolo()">Nuovo calcolo</button>
+  <!-- MODALE RISULTATO -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3>Risultato del calcolo</h3>
+      <div class="result-text" id="modalTotale"></div>
+      <div class="details" id="modalDettagli"></div>
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="chiudiModal()">Chiudi</button>
+        <button class="btn-primary" onclick="nuovoCalcolo()">Nuovo calcolo</button>
+      </div>
     </div>
   </div>
-</div>
 
 <script>
-  function clamp(value, min, max) {
+function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
@@ -415,7 +429,10 @@ function chiudiModal() {
 }
 
 function nuovoCalcolo() {
-  document.getElementById('performance').value = 0;
+  document.getElementById('perfAnno1').value = 0;
+  document.getElementById('perfAnno2').value = 0;
+  document.getElementById('perfAnno3').value = 0;
+
   document.getElementById('tipoTitoloAccesso').value = 'diploma';
   document.getElementById('votoAccesso').value = 100;
   document.getElementById('lodeAccesso').checked = false;
@@ -423,6 +440,7 @@ function nuovoCalcolo() {
   document.getElementById('numLaureeLM').value = 0;
   document.getElementById('numMaster1').value = 0;
   document.getElementById('numMaster2').value = 0;
+  document.getElementById('numSpecializzazione').value = 0;
   document.getElementById('annoAssunzione').value = 2000;
   document.getElementById('abilitazione').value = 0;
   document.getElementById('numCertInformatica').value = 0;
@@ -439,7 +457,6 @@ function nuovoCalcolo() {
 }
 
 function calcola() {
-     
   const procedura = document.querySelector('input[name="procedura"]:checked').value;
 
   // ESPERIENZA dentro B.2
@@ -459,13 +476,33 @@ function calcola() {
   }
   puntiEsperienza = clamp(puntiEsperienza, 0, 25);
 
-  // A – PERFORMANCE
+  // A – PERFORMANCE (media 3 anni × 0,476 con troncamento a 3 decimali)
   let punteggioPerformance = 0;
   if (procedura === 'art15') {
-    punteggioPerformance = parseFloat(document.getElementById('performance').value) || 0;
+    const v1 = parseFloat(document.getElementById('perfAnno1').value) || 0;
+    const v2 = parseFloat(document.getElementById('perfAnno2').value) || 0;
+    const v3 = parseFloat(document.getElementById('perfAnno3').value) || 0;
+
+    const mediaPerformance = (v1 + v2 + v3) / 3;
+
+    const risultatoGrezzo = mediaPerformance * 0.476;
+    const risultatoTroncato = Math.floor(risultatoGrezzo * 1000) / 1000;
+
+    const decimaliString = risultatoTroncato.toFixed(3).split('.')[1];
+    const decimali = parseInt(decimaliString, 10);
+
+    if (decimali < 500) {
+      punteggioPerformance = Math.floor(risultatoTroncato);
+    } else {
+      punteggioPerformance = Math.ceil(risultatoTroncato);
+    }
+
     punteggioPerformance = clamp(punteggioPerformance, 0, 20);
+
     document.getElementById('scorePerformance').textContent =
-      'A – Performance: ' + punteggioPerformance.toFixed(2);
+      'A – Performance: ' + punteggioPerformance.toFixed(2) +
+      ' punti (media: ' + mediaPerformance.toFixed(2) +
+      ', indice: 0,476, risultato grezzo: ' + risultatoTroncato.toFixed(3) + ')';
   } else {
     document.getElementById('scorePerformance').textContent =
       'A – Non rilevante per art. 13';
@@ -507,13 +544,16 @@ function calcola() {
   const numLaureeLM   = parseFloat(document.getElementById('numLaureeLM').value) || 0;
   const numMaster1    = parseFloat(document.getElementById('numMaster1').value) || 0;
   const numMaster2    = parseFloat(document.getElementById('numMaster2').value) || 0;
+  const numSpecializzazione = parseFloat(document.getElementById('numSpecializzazione').value) || 0;
 
   let punteggioTitoliUlteriori = 0;
-  punteggioTitoliUlteriori += numLTriennali * 5;
-  punteggioTitoliUlteriori += numLaureeLM * 10;
+  punteggioTitoliUlteriori += numLTriennali * 2.5;
+  punteggioTitoliUlteriori += numLaureeLM * 5;
   const puntiMaster1 = Math.min(numMaster1 * 1.5, 3);
   const puntiMaster2 = Math.min(numMaster2 * 3, 7);
-  punteggioTitoliUlteriori += puntiMaster1 + puntiMaster2;
+  const puntiSpecializzazione = Math.min(numSpecializzazione * 3.5, 7);
+  const puntiMaster2eSpec = Math.min(puntiMaster2 + puntiSpecializzazione, 7);
+  punteggioTitoliUlteriori += puntiMaster1 + puntiMaster2eSpec;
   punteggioTitoliUlteriori = clamp(punteggioTitoliUlteriori, 0, 20);
   document.getElementById('scoreTitoliUlteriori').textContent =
     'B.1.3 Titoli ulteriori: ' + punteggioTitoliUlteriori.toFixed(2);
@@ -608,30 +648,27 @@ function calcola() {
     `;
   }
 
-// --- INVIO LOG A GOOGLE SHEETS (globale) ---
-
+  // --- INVIO LOG A GOOGLE SHEETS (globale) ---
   const payload = {
-    procedura: procedura,                 // 'art13' o 'art15'
-    totale: totale,                       // totale calcolo
+    procedura: procedura,
+    totale: totale,
     bloccoA: procedura === 'art15' ? punteggioPerformance : 0,
-    bloccoB: bloccoB,                     // già calcolato sopra
-    bloccoC: puntiIncarichi               // incarichi (C)
+    bloccoB: bloccoB,
+    bloccoC: puntiIncarichi
   };
 
-  fetch('https://script.google.com/macros/s/AKfycbzSNDe96QDKDFVMeuJVC9-pEeyAUd3n9ybPSVsN-minbxF-5ChXQD4kSoYr80HKUyhR/exec', {  // <-- sostituisci con il tuo URL
+  fetch('https://script.google.com/macros/s/AKfycbzSNDe96QDKDFVMeuJVC9-pEeyAUd3n9ybPSVsN-minbxF-5ChXQD4kSoYr80HKUyhR/exec', {
     method: 'POST',
-    mode: 'no-cors',                    // così non ti blocca per CORS
+    mode: 'no-cors',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(payload)
   }).catch(err => {
-    // opzionale: log in console, senza bloccare l'utente
     console.error('Errore invio log:', err);
   });
+  // --- FINE INVIO LOG A GOOGLE SHEETS (globale) ---
 
-// --- FINEINVIO LOG A GOOGLE SHEETS (globale) ---
-  
   mostraModal(testoTotale, dettagli);
 }
 </script>
