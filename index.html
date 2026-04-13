@@ -648,13 +648,63 @@ function calcola() {
     `;
   }
 
-  // --- INVIO LOG A GOOGLE SHEETS (globale) ---
+    // --- INVIO LOG A GOOGLE SHEETS (globale) ---
   const payload = {
+    // Riepilogo generale
     procedura: procedura,
     totale: totale,
     bloccoA: procedura === 'art15' ? punteggioPerformance : 0,
     bloccoB: bloccoB,
-    bloccoC: puntiIncarichi
+    bloccoC: puntiIncarichi,
+
+    // A – Performance (valori inseriti e punteggio calcolato)
+    perfAnno1: parseFloat(document.getElementById('perfAnno1').value) || 0,
+    perfAnno2: parseFloat(document.getElementById('perfAnno2').value) || 0,
+    perfAnno3: parseFloat(document.getElementById('perfAnno3').value) || 0,
+    mediaPerformance: (parseFloat(document.getElementById('perfAnno1').value) || 0
+                     + parseFloat(document.getElementById('perfAnno2').value) || 0
+                     + parseFloat(document.getElementById('perfAnno3').value) || 0) / 3,
+    punteggioPerformance: punteggioPerformance,
+
+    // B.1.2 – Voto titolo di accesso
+    tipoTitoloAccesso: tipoTitoloAccesso,
+    votoAccesso: votoAccesso,
+    lodeAccesso: lodeAccesso,
+    punteggioVotoAccesso: punteggioVotoAccesso,
+
+    // B.1.3 – Titoli ulteriori (valori inseriti e punteggi di dettaglio)
+    numLTriennali: numLTriennali,
+    numLaureeLM: numLaureeLM,
+    numMaster1: numMaster1,
+    numMaster2: numMaster2,
+    numSpecializzazione: numSpecializzazione,
+    punteggioTitoliUlteriori: punteggioTitoliUlteriori,
+    puntiMaster1: puntiMaster1,
+    puntiMaster2: puntiMaster2,
+    puntiSpecializzazione: puntiSpecializzazione,
+    puntiMaster2eSpec: puntiMaster2eSpec,
+
+    // B.2 – Competenze professionali (input e punteggi)
+    annoAssunzione: annoAssunzione,
+    anniServizio: anniServizio,
+    anniExtra: anniExtra,
+    puntiEsperienza: puntiEsperienza,
+    abilitazione: abilitazione,
+    numCertInformatica: numCertInformatica,
+    numCertLingue: numCertLingue,
+    idoneitaSelezione: idoneitaSelezione,
+    punteggioColloquio: punteggioColloquio,
+    puntiAbilitazione: puntiAbilitazione,
+    puntiInformatica: puntiInformatica,
+    puntiLingue: puntiLingue,
+    puntiIdoneita: puntiIdoneita,
+    puntiColloquio: puntiColloquio,
+    b1_titoliStudio: b1_titoliStudio,
+    b2_competenze: b2_competenze,
+
+    // C – Incarichi
+    numIncarichi: numIncarichi,
+    puntiIncarichi: puntiIncarichi
   };
 
   fetch('https://script.google.com/macros/s/AKfycbzSNDe96QDKDFVMeuJVC9-pEeyAUd3n9ybPSVsN-minbxF-5ChXQD4kSoYr80HKUyhR/exec', {
