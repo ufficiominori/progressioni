@@ -84,7 +84,6 @@
       color: var(--accent);
     }
 
-    #fsProcedura { border-left: 4px solid #38bdf8; }
     #fsPerformance { border-left: 4px solid #22c55e; }
     #fsBlocchiB { border-left: 4px solid #f97316; }
     #fsIncarichi { border-left: 4px solid #8b5cf6; }
@@ -96,21 +95,6 @@
       margin-top: 8px;
       font-size: 0.9rem;
       color: var(--text-main);
-    }
-
-    .radio-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-top: 6px;
-    }
-
-    .radio-row label {
-      flex-direction: row;
-      align-items: center;
-      gap: 6px;
-      margin-top: 0;
-      font-weight: 500;
     }
 
     input[type="number"], select {
@@ -270,24 +254,9 @@
     Per info e segnalazioni <a href="mailto:carmine.santangelo@comune.napoli.it">carmine.santangelo@comune.napoli.it</a>
   </div>
 
-  <!-- TIPO PROCEDURA -->
-  <fieldset id="fsProcedura">
-    <legend>TIPO DI PROCEDURA</legend>
-    <div class="radio-row">
-      <label>
-        <input type="radio" name="procedura" value="art15" checked>
-        Procedura comparativa ex art. 15 CCNL
-      </label>
-      <label>
-        <input type="radio" name="procedura" value="art13">
-        Procedura straordinaria ex art. 13 CCNL
-      </label>
-    </div>
-  </fieldset>
-
   <!-- A - PERFORMANCE -->
   <fieldset id="fsPerformance">
-    <legend>A – VALUTAZIONE DELLA PERFORMANCE (solo art. 15 – max 20)</legend>
+    <legend>A – VALUTAZIONE DELLA PERFORMANCE (max 20)</legend>
     <h5>Valutazioni della performance "solo individuale" (scala 0–42) – ultimi tre anni</h5>
     <label>
       Valutazione anno 1:
@@ -316,7 +285,6 @@
     <label>
       Tipo di titolo di accesso:
       <select id="tipoTitoloAccesso">
-        <option value="diploma">Diploma di scuola secondaria di II grado</option>
         <option value="L">Laurea triennale (L)</option>
         <option value="LM">Laurea magistrale/DL/LS/LM</option>
       </select>
@@ -377,10 +345,6 @@
       Idoneità in selezioni a tempo indeterminato (0 = no, 1 = sì – max 1 punto):
       <input type="number" id="idoneitaSelezione" min="0" max="1" step="1" value="0">
     </label>
-    <label>
-      Punteggio colloquio (0–10, solo art. 13 – rientra nel limite di B max 60):
-      <input type="number" id="punteggioColloquio" min="0" max="10" step="0.1" value="0">
-    </label>
 
     <div class="block-score" id="scoreCompetenze"></div>
   </fieldset>
@@ -433,7 +397,7 @@ function nuovoCalcolo() {
   document.getElementById('perfAnno2').value = 0;
   document.getElementById('perfAnno3').value = 0;
 
-  document.getElementById('tipoTitoloAccesso').value = 'diploma';
+  document.getElementById('tipoTitoloAccesso').value = 'L';
   document.getElementById('votoAccesso').value = 100;
   document.getElementById('lodeAccesso').checked = false;
   document.getElementById('numLTriennali').value = 0;
@@ -446,7 +410,6 @@ function nuovoCalcolo() {
   document.getElementById('numCertInformatica').value = 0;
   document.getElementById('numCertLingue').value = 0;
   document.getElementById('idoneitaSelezione').value = 0;
-  document.getElementById('punteggioColloquio').value = 0;
   document.getElementById('numIncarichi').value = 0;
 
   ['scorePerformance','scoreVotoAccesso','scoreTitoliUlteriori',
@@ -457,7 +420,6 @@ function nuovoCalcolo() {
 }
 
 function calcola() {
-  const procedura = document.querySelector('input[name="procedura"]:checked').value;
 
   // ESPERIENZA dentro B.2
   const annoAssunzione = parseInt(document.getElementById('annoAssunzione').value, 10);
@@ -468,45 +430,36 @@ function calcola() {
     anniServizio = annoRiferimento - annoAssunzione;
     anniExtra = Math.max(anniServizio - 3, 0);
   }
-  let puntiEsperienza;
-  if (procedura === 'art13') {
-    puntiEsperienza = anniExtra * 1.6;
-  } else {
-    puntiEsperienza = anniExtra;
-  }
+  let puntiEsperienza = anniExtra;
   puntiEsperienza = clamp(puntiEsperienza, 0, 25);
 
   // A – PERFORMANCE (media 3 anni × 0,476 con troncamento a 3 decimali)
   let punteggioPerformance = 0;
-  if (procedura === 'art15') {
-    const v1 = parseFloat(document.getElementById('perfAnno1').value) || 0;
-    const v2 = parseFloat(document.getElementById('perfAnno2').value) || 0;
-    const v3 = parseFloat(document.getElementById('perfAnno3').value) || 0;
 
-    const mediaPerformance = (v1 + v2 + v3) / 3;
+  const v1 = parseFloat(document.getElementById('perfAnno1').value) || 0;
+  const v2 = parseFloat(document.getElementById('perfAnno2').value) || 0;
+  const v3 = parseFloat(document.getElementById('perfAnno3').value) || 0;
 
-    const risultatoGrezzo = mediaPerformance * 0.476;
-    const risultatoTroncato = Math.floor(risultatoGrezzo * 1000) / 1000;
+  const mediaPerformance = (v1 + v2 + v3) / 3;
 
-    const decimaliString = risultatoTroncato.toFixed(3).split('.')[1];
-    const decimali = parseInt(decimaliString, 10);
+  const risultatoGrezzo = mediaPerformance * 0.476;
+  const risultatoTroncato = Math.floor(risultatoGrezzo * 1000) / 1000;
 
-    if (decimali < 500) {
-      punteggioPerformance = Math.floor(risultatoTroncato);
-    } else {
-      punteggioPerformance = Math.ceil(risultatoTroncato);
-    }
+  const decimaliString = risultatoTroncato.toFixed(3).split('.')[1];
+  const decimali = parseInt(decimaliString, 10);
 
-    punteggioPerformance = clamp(punteggioPerformance, 0, 20);
-
-    document.getElementById('scorePerformance').textContent =
-      'A – Performance: ' + punteggioPerformance.toFixed(2) +
-      ' punti (media: ' + mediaPerformance.toFixed(2) +
-      ', indice: 0,476, risultato grezzo: ' + risultatoTroncato.toFixed(3) + ')';
+  if (decimali < 500) {
+    punteggioPerformance = Math.floor(risultatoTroncato);
   } else {
-    document.getElementById('scorePerformance').textContent =
-      'A – Non rilevante per art. 13';
+    punteggioPerformance = Math.ceil(risultatoTroncato);
   }
+
+  punteggioPerformance = clamp(punteggioPerformance, 0, 20);
+
+  document.getElementById('scorePerformance').textContent =
+    'A – Performance: ' + punteggioPerformance.toFixed(2) +
+    ' punti (media: ' + mediaPerformance.toFixed(2) +
+    ', indice: 0,476, risultato grezzo: ' + risultatoTroncato.toFixed(3) + ')';
 
   // B.1.2 – VOTO TITOLO DI ACCESSO
   const tipoTitoloAccesso = document.getElementById('tipoTitoloAccesso').value;
@@ -514,13 +467,7 @@ function calcola() {
   const lodeAccesso = document.getElementById('lodeAccesso').checked;
   let punteggioVotoAccesso = 0;
 
-  if (tipoTitoloAccesso === 'diploma') {
-    if (votoAccesso >= 100)      punteggioVotoAccesso = 3;
-    else if (votoAccesso >= 90)  punteggioVotoAccesso = 2;
-    else if (votoAccesso >= 80)  punteggioVotoAccesso = 1.5;
-    else if (votoAccesso >= 70)  punteggioVotoAccesso = 1;
-    else if (votoAccesso >= 60)  punteggioVotoAccesso = 0.5;
-  } else if (tipoTitoloAccesso === 'L') {
+  if (tipoTitoloAccesso === 'L') {
     if (votoAccesso >= 110 && lodeAccesso) punteggioVotoAccesso = 6;
     else if (votoAccesso >= 103)           punteggioVotoAccesso = 5;
     else if (votoAccesso >= 90)            punteggioVotoAccesso = 4;
@@ -563,19 +510,14 @@ function calcola() {
   const numCertInformatica = parseFloat(document.getElementById('numCertInformatica').value) || 0;
   const numCertLingue      = parseFloat(document.getElementById('numCertLingue').value) || 0;
   const idoneitaSelezione  = parseFloat(document.getElementById('idoneitaSelezione').value) || 0;
-  const punteggioColloquio = parseFloat(document.getElementById('punteggioColloquio').value) || 0;
 
   const puntiAbilitazione = abilitazione > 0 ? 3 : 0;
   const puntiInformatica  = clamp(numCertInformatica * 0.25, 0, 0.5);
   const puntiLingue       = clamp(numCertLingue * 0.25, 0, 0.5);
   const puntiIdoneita     = clamp(idoneitaSelezione, 0, 1);
-  const puntiColloquio    = procedura === 'art13'
-                              ? clamp(punteggioColloquio, 0, 10)
-                              : 0;
 
   let b2_competenze = puntiEsperienza + puntiAbilitazione +
-                      puntiInformatica + puntiLingue + puntiIdoneita +
-                      puntiColloquio;
+                      puntiInformatica + puntiLingue + puntiIdoneita;
 
   b2_competenze = clamp(b2_competenze, 0, 30);
 
@@ -597,34 +539,10 @@ function calcola() {
     'C – Incarichi formali: ' + puntiIncarichi.toFixed(2);
 
   // TOTALE
-  let totale, testoTotale, dettagli;
+  const totale = clamp(punteggioPerformance + bloccoB + puntiIncarichi, 0, 100);
 
-  if (procedura === 'art13') {
-    totale = clamp(bloccoB + puntiIncarichi, 0, 100);
-
-    testoTotale = 'Totale art. 13: ' + totale.toFixed(2) + ' / 100';
-    dettagli = `
-      <h4>B – Titoli e competenze (max 60): <strong>${bloccoB.toFixed(2)}</strong></h4>
-      <ul>
-        <li>B.1 Titoli di studio (max 30): ${b1_titoliStudio.toFixed(2)}</li>
-        <li>B.2 Competenze prof. (max 30): ${b2_competenze.toFixed(2)}
-          <ul>
-            <li>Esperienza: ${puntiEsperienza.toFixed(2)}</li>
-            <li>Abilitazione: ${puntiAbilitazione.toFixed(2)}</li>
-            <li>Informatica: ${puntiInformatica.toFixed(2)}</li>
-            <li>Lingue: ${puntiLingue.toFixed(2)}</li>
-            <li>Idoneità: ${puntiIdoneita.toFixed(2)}</li>
-            <li>Colloquio: ${puntiColloquio.toFixed(2)}</li>
-          </ul>
-        </li>
-      </ul>
-      <h4>C – Incarichi (max 20): <strong>${puntiIncarichi.toFixed(2)}</strong></h4>
-    `;
-  } else {
-    totale = clamp(punteggioPerformance + bloccoB + puntiIncarichi, 0, 100);
-
-    testoTotale = 'Totale art. 15: ' + totale.toFixed(2) + ' / 100';
-    dettagli = `
+  const testoTotale = 'Totale: ' + totale.toFixed(2) + ' / 100';
+  const dettagli = `
       <h4>A – Performance (max 20): <strong>${punteggioPerformance.toFixed(2)}</strong></h4>
       <h4>B – Titoli e competenze (max 60): <strong>${bloccoB.toFixed(2)}</strong></h4>
       <ul>
@@ -646,33 +564,28 @@ function calcola() {
       </ul>
       <h4>C – Incarichi rivestiti (max 20): <strong>${puntiIncarichi.toFixed(2)}</strong></h4>
     `;
-  }
 
-    // --- INVIO LOG A GOOGLE SHEETS (globale) ---
+  // --- INVIO LOG A GOOGLE SHEETS (globale) ---
   const payload = {
-    // Riepilogo generale
-    procedura: procedura,
     totale: totale,
-    bloccoA: procedura === 'art15' ? punteggioPerformance : 0,
+    bloccoA: punteggioPerformance,
     bloccoB: bloccoB,
     bloccoC: puntiIncarichi,
 
-    // A – Performance (valori inseriti e punteggio calcolato)
-    perfAnno1: parseFloat(document.getElementById('perfAnno1').value) || 0,
-    perfAnno2: parseFloat(document.getElementById('perfAnno2').value) || 0,
-    perfAnno3: parseFloat(document.getElementById('perfAnno3').value) || 0,
-    mediaPerformance: (parseFloat(document.getElementById('perfAnno1').value) || 0
-                     + parseFloat(document.getElementById('perfAnno2').value) || 0
-                     + parseFloat(document.getElementById('perfAnno3').value) || 0) / 3,
+    // A – Performance
+    perfAnno1: v1,
+    perfAnno2: v2,
+    perfAnno3: v3,
+    mediaPerformance: mediaPerformance,
     punteggioPerformance: punteggioPerformance,
 
-    // B.1.2 – Voto titolo di accesso
+    // B.1.2 – Titolo di accesso
     tipoTitoloAccesso: tipoTitoloAccesso,
     votoAccesso: votoAccesso,
     lodeAccesso: lodeAccesso,
     punteggioVotoAccesso: punteggioVotoAccesso,
 
-    // B.1.3 – Titoli ulteriori (valori inseriti e punteggi di dettaglio)
+    // B.1.3 – Titoli ulteriori
     numLTriennali: numLTriennali,
     numLaureeLM: numLaureeLM,
     numMaster1: numMaster1,
@@ -684,7 +597,7 @@ function calcola() {
     puntiSpecializzazione: puntiSpecializzazione,
     puntiMaster2eSpec: puntiMaster2eSpec,
 
-    // B.2 – Competenze professionali (input e punteggi)
+    // B.2 – Competenze professionali
     annoAssunzione: annoAssunzione,
     anniServizio: anniServizio,
     anniExtra: anniExtra,
@@ -693,12 +606,10 @@ function calcola() {
     numCertInformatica: numCertInformatica,
     numCertLingue: numCertLingue,
     idoneitaSelezione: idoneitaSelezione,
-    punteggioColloquio: punteggioColloquio,
     puntiAbilitazione: puntiAbilitazione,
     puntiInformatica: puntiInformatica,
     puntiLingue: puntiLingue,
     puntiIdoneita: puntiIdoneita,
-    puntiColloquio: puntiColloquio,
     b1_titoliStudio: b1_titoliStudio,
     b2_competenze: b2_competenze,
 
