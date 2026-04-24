@@ -329,8 +329,8 @@
       <input type="number" id="annoAssunzione" min="1900" max="2025" step="1" value="2000">
     </label>
     <label>
-      Abilitazione ad albo professionale (0 = no, 1 = sì – max 3 punti):
-      <input type="number" id="abilitazione" min="0" max="1" step="1" value="0">
+      Numero abilitazioni ad albo professionale (1,5 punti ciascuna – max 3 punti):
+      <input type="number" id="abilitazione" min="0" step="1" value="0">
     </label>
     <label>
       Numero certificazioni informatiche (0,25 punti ciascuna – max 0,5 punti):
@@ -510,7 +510,7 @@ function calcola() {
   const numCertLingue      = parseFloat(document.getElementById('numCertLingue').value) || 0;
   const idoneitaSelezione  = parseFloat(document.getElementById('idoneitaSelezione').value) || 0;
 
-  const puntiAbilitazione = abilitazione > 0 ? 3 : 0;
+  const puntiAbilitazione = clamp(abilitazione * 1.5, 0, 3);
   const puntiInformatica  = clamp(numCertInformatica * 0.25, 0, 0.5);
   const puntiLingue       = clamp(numCertLingue * 0.25, 0, 0.5);
   const puntiIdoneita     = clamp(idoneitaSelezione, 0, 1);
