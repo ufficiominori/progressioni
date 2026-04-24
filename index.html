@@ -487,21 +487,35 @@ function calcola() {
     'B.1.2 Voto titolo di accesso: ' + punteggioVotoAccesso.toFixed(2);
 
   // B.1.3 – TITOLI ULTERIORI
-  const numLTriennali = parseFloat(document.getElementById('numLTriennali').value) || 0;
-  const numLaureeLM   = parseFloat(document.getElementById('numLaureeLM').value) || 0;
-  const numMaster1    = parseFloat(document.getElementById('numMaster1').value) || 0;
-  const numMaster2    = parseFloat(document.getElementById('numMaster2').value) || 0;
+  const numLTriennali       = parseFloat(document.getElementById('numLTriennali').value) || 0;
+  const numLaureeLM         = parseFloat(document.getElementById('numLaureeLM').value) || 0;
+  const numMaster1          = parseFloat(document.getElementById('numMaster1').value) || 0;
+  const numMaster2          = parseFloat(document.getElementById('numMaster2').value) || 0;
   const numSpecializzazione = parseFloat(document.getElementById('numSpecializzazione').value) || 0;
 
   let punteggioTitoliUlteriori = 0;
-  punteggioTitoliUlteriori += numLTriennali * 2.5;
-  punteggioTitoliUlteriori += numLaureeLM * 5;
+
+  // Lauree ulteriori
+  punteggioTitoliUlteriori += numLTriennali * 2.5; // 2,5 punti per ogni L
+  punteggioTitoliUlteriori += numLaureeLM   * 5;   // 5 punti per ogni DL/LS/LM
+
+  // Master I livello: 1,5 punti ciascuno, max 3 punti
   const puntiMaster1 = Math.min(numMaster1 * 1.5, 3);
-  const puntiMaster2 = Math.min(numMaster2 * 3, 7);
-  const puntiSpecializzazione = Math.min(numSpecializzazione * 3.5, 7);
-  const puntiMaster2eSpec = Math.min(puntiMaster2 + puntiSpecializzazione, 7);
+
+  // Master II livello: 3 punti ciascuno
+  const puntiDaMaster2 = numMaster2 * 3;
+
+  // Diploma di Specializzazione / Dottorato: 3,5 punti ciascuno
+  const puntiDaSpecEDott = numSpecializzazione * 3.5;
+
+  // Master II + Specializzazione/Dottorato: max 7 punti complessivi
+  const puntiMaster2eSpec = Math.min(puntiDaMaster2 + puntiDaSpecEDott, 7);
+
   punteggioTitoliUlteriori += puntiMaster1 + puntiMaster2eSpec;
+
+  // Massimale complessivo B.1.3: 20 punti
   punteggioTitoliUlteriori = clamp(punteggioTitoliUlteriori, 0, 20);
+
   document.getElementById('scoreTitoliUlteriori').textContent =
     'B.1.3 Titoli ulteriori: ' + punteggioTitoliUlteriori.toFixed(2);
 
