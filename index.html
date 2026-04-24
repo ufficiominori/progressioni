@@ -326,8 +326,8 @@
     <h4>Competenze professionali (max 30)</h4>
 
     <label>
-      Anno di assunzione (es. 2000 – esperienza max 25 punti):
-      <input type="number" id="annoAssunzione" min="1900" max="2025" step="1" value="2000">
+      Data di inizio servizio (ai fini del punteggio esperienza – max 25 punti):
+    <  input type="date" id="dataInizioServizio" value="">
     </label>
     <label>
       Numero abilitazioni ad albo professionale (1,5 punti ciascuna – max 3 punti):
@@ -437,16 +437,41 @@ function nuovoCalcolo() {
 
 function calcola() {
 
-  // ESPERIENZA dentro B.2 (semplificata per anno)
-  const annoAssunzione = parseInt(document.getElementById('annoAssunzione').value, 10);
-  const annoRiferimento = 2025;
+    // ESPERIENZA dentro B.2 – calcolo a giorni con scadenza 25/05/2026
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const dataScadenza = new Date(2026, 4, 25); // 25 maggio 2026 (mese 4 perché 0-based)
+
+  const valDataInizio = document.getElementById('dataInizioServizio').value;
+
+  let puntiEsperienza = 0;
   let anniServizio = 0;
   let anniExtra = 0;
-  if (!isNaN(annoAssunzione) && annoAssunzione <= annoRiferimento) {
-    anniServizio = annoRiferimento - annoAssunzione;
-    anniExtra = Math.max(anniServizio - 3, 0);
+
+  if (valDataInizio) {
+    const dataInizio = new Date(valDataInizio + 'T00:00:00');
+
+    if (dataInizio <= dataScadenza) {
+      // Fine del periodo minimo di 36 mesi (3 anni) da escludere dal punteggio
+      const dataFineMinimo = new Date(dataInizio);
+      dataFineMinimo.setFullYear(dataFineMinimo.getFullYear() + 3);
+
+      if (dataFineMinimo < dataScadenza) {
+        // Giorni utili oltre i 36 mesi
+        const giorniUtili = Math.floor((dataScadenza - dataFineMinimo) / msPerDay);
+
+        // Anni utili (decimali) per il punteggio
+        const anniUtili = giorniUtili / 365;
+
+        puntiEsperienza = Math.min(anniUtili, 25);
+
+        // Se vuoi loggare anche anniServizio e anniExtra nel payload:
+        const giorniTotali = Math.floor((dataScadenza - dataInizio) / msPerDay);
+        anniServizio = giorniTotali / 365;
+        anniExtra = anniUtili;
+      }
+    }
   }
-  let puntiEsperienza = anniExtra;
+
   puntiEsperienza = clamp(puntiEsperienza, 0, 25);
 
   // A – PERFORMANCE (media 3 anni × 0,476 con troncamento a 3 decimali)
