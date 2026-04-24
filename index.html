@@ -378,6 +378,22 @@
   </div>
 
 <script>
+
+// LETTURA IP
+let userIP = '';
+
+// Recupera l'IP pubblico del client
+fetch('https://api64.ipify.org?format=json')
+  .then(res => res.json())
+  .then(data => {
+    userIP = data.ip;  // es: "93.45.xxx.xxx"
+  })
+  .catch(err => {
+    console.error('Errore IP:', err);
+    userIP = '';
+  });
+// LETTURA IP FINE
+  
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
@@ -581,6 +597,7 @@ function calcola() {
 
   // --- INVIO LOG A GOOGLE SHEETS (globale) ---
   const payload = {
+    ip: userIP,
     totale: totale,
     bloccoA: punteggioPerformance,
     bloccoB: bloccoB,
@@ -631,7 +648,7 @@ function calcola() {
     numIncarichi: numIncarichi,
     puntiIncarichi: puntiIncarichi
   };
-
+  
   fetch('https://script.google.com/macros/s/AKfycbzSNDe96QDKDFVMeuJVC9-pEeyAUd3n9ybPSVsN-minbxF-5ChXQD4kSoYr80HKUyhR/exec', {
     method: 'POST',
     mode: 'no-cors',
